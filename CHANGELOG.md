@@ -21,8 +21,14 @@
 - `cli.py`：支持 `EMAIL_ADDR` 环境变量同时作为 sender / smtp_user / to
 - `digest.yml`：移除所有 Variables 引用，只需 3 个 Secrets（`OPENAI_COMPAT_API_KEY` / `EMAIL_ADDR` / `SMTP_PASS`）
 
+**Added**
+- `llm.py`：新增 `call_llm_filter_papers()` — LLM 预筛选，批量发送标题+摘要片段给 LLM 打分，只对相关论文生成详细摘要
+- `config.yaml`：新增 `filter` 配置区块（`enabled` / `top_k` / `prompt`）
+
 **Fixed**
 - `output.py`：修复 `digest_en` / `digest_zh` 不渲染的 bug（旧代码只检查 `tldr` / `full_md`）
+- `sitegen.py`：修复 History 列表显示已删除旧归档链接的 bug，增加自动清理超出 `keep_runs` 的旧文件
+- `config.yaml`：`keep_runs` 从 1024 降到 30（约 3 个月）
 
 **Removed**
 - `docs/archive/` 中原仓库遗留的 252 个旧归档 HTML 文件（2025-08 ~ 2026-03-18），只保留自己生成的

@@ -264,16 +264,25 @@ def _build_page(title: str, sub: str, cards_html: str, history_html: str,
 </body></html>
 """
 
-def _history_list(archive_dir: str, keep: int) -> List[str]:
+def _history_list(archive_dir: str, keep: int, prefix: str = "archive/") -> List[str]:
+    """列出最近 keep 个归档，并清理超出的旧文件。
+    prefix: 链接前缀。index.html 用 'archive/'，归档页自身用 './'。
+    """
     if not os.path.isdir(archive_dir):
         return []
     files = [f for f in os.listdir(archive_dir) if f.endswith(".html")]
     files.sort(reverse=True)
+    # 清理超出 keep 数量的旧归档文件
+    for old in files[keep:]:
+        try:
+            os.remove(os.path.join(archive_dir, old))
+        except OSError:
+            pass
     files = files[:keep]
     links = []
     for f in files:
         date = f.replace(".html","")
-        links.append(f'<a href="archive/{_esc(f)}">{_esc(date)}</a>')
+        links.append(f'<a href="{prefix}{_esc(f)}">{_esc(date)}</a>')
     return links
 
 def generate_site(items: List[Dict[str,Any]],
@@ -294,16 +303,25 @@ def generate_site(items: List[Dict[str,Any]],
         sid = it.get("id") or ""
         cards.append(_card(it, translations.get(sid), summaries_zh.get(sid), summaries_en.get(sid)))
     cards_html = "\n".join(cards)
-    hist_html = "\n".join(_history_list(archive_dir, keep_runs))
+
+    # 先创建新归档文件（占位），确保 _history_list 扫描时能包含它
+    arch_path = os.path.join(archive_dir, f"{stamp}.html")
+    _write(arch_path, "")
+
+    # 现在扫描目录：新归档已存在，旧的超出 keep_runs 的会被清理
+    # index.html 在 site_dir 下，链接需要 archive/ 前缀
+    hist_html_index = "\n".join(_history_list(archive_dir, keep_runs, prefix="archive/"))
+    # 归档页在 archive/ 目录下，链接用 ./ 相对路径
+    hist_html_archive = "\n".join(_history_list(archive_dir, keep_runs, prefix="./"))
 
     acc = (accent or "#2563eb").strip()
 
-    arch_html = _build_page(site_title, f"Snapshot: {stamp}", cards_html, history_html=hist_html,
+    # 写入归档页（覆盖占位文件）
+    arch_html = _build_page(site_title, f"Snapshot: {stamp}", cards_html, history_html=hist_html_archive,
                             theme_mode=theme, accent=acc)
-    arch_path = os.path.join(archive_dir, f"{stamp}.html")
     _write(arch_path, arch_html)
 
-    index_html = _build_page(site_title, "Latest digest", cards_html, history_html=hist_html,
+    index_html = _build_page(site_title, "Latest digest", cards_html, history_html=hist_html_index,
                              theme_mode=theme, accent=acc)
     index_path = os.path.join(site_dir, "index.html")
     _write(index_path, index_html)

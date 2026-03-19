@@ -148,6 +148,89 @@ def call_llm_bilingual_summary(
               "experiments_en", "experiments_zh", "limitations_en", "limitations_zh"]
     return {k: (data.get(k) or "").strip() for k in fields}
 
+# ========== LLM 预筛选：基于标题+摘要片段批量打分 ==========
+
+def call_llm_filter_papers(
+    items: List[Dict[str, Any]],
+    keywords: List[str],
+    *,
+    base_url: str,
+    model: str,
+    api_key: str,
+    top_k: int = 20,
+    custom_prompt: str = "",
+) -> List[str]:
+    """
+    批量发送论文标题+摘要片段给 LLM，返回最相关的论文 ID 列表。
+    参数:
+        items: arXiv 条目列表
+        keywords: 用户关注的关键词列表
+        top_k: 最多保留几篇
+        custom_prompt: 用户自定义筛选 prompt（可选）
+    返回:
+        选中的 arXiv ID 列表
+    """
+    if not items:
+        return []
+
+    # 构造简短的论文列表（标题 + 摘要前 150 字）
+    paper_list = []
+    for i, it in enumerate(items):
+        title = (it.get("title") or "").strip()
+        abstract_short = (it.get("summary") or "")[:150].strip()
+        sid = it.get("id") or f"unknown_{i}"
+        paper_list.append(f"[{i}] id={sid}\n    title: {title}\n    abstract: {abstract_short}...")
+
+    papers_text = "\n".join(paper_list)
+    kw_text = ", ".join(keywords) if keywords else "general AI research"
+
+    sys_prompt = (
+        "You are a research paper relevance judge. "
+        "Given a list of paper titles and abstract snippets, select the ones most relevant to the user's research interests. "
+        "Be selective — only keep papers that are clearly relevant."
+    )
+
+    user_instruction = custom_prompt or (
+        f"My research interests: {kw_text}\n\n"
+        "Select the papers that are MOST relevant to my interests. "
+        "A paper is relevant if its core contribution directly addresses one of my interest topics. "
+        "Papers that only tangentially mention a keyword but focus on something else should be excluded.\n\n"
+    )
+
+    user_msg = (
+        f"{user_instruction}"
+        f"Papers ({len(items)} total):\n{papers_text}\n\n"
+        f"Return ONLY a JSON array of the selected paper indices (0-based integers), e.g. [0, 2, 5].\n"
+        f"Select at most {top_k} papers. If fewer are relevant, return fewer."
+    )
+
+    messages = [
+        {"role": "system", "content": sys_prompt},
+        {"role": "user", "content": user_msg}
+    ]
+
+    text = _chat_completions_request(
+        base_url=base_url, api_key=api_key, model=model, messages=messages,
+        temperature=0.0, max_tokens=200
+    )
+
+    # 解析返回的 JSON 数组
+    m = re.search(r"\[[\s\S]*?\]", text)
+    if not m:
+        # 解析失败则返回所有论文（不过滤）
+        return [it.get("id", "") for it in items]
+    try:
+        indices = json.loads(m.group(0))
+        selected_ids = []
+        for idx in indices:
+            if isinstance(idx, int) and 0 <= idx < len(items):
+                sid = items[idx].get("id", "")
+                if sid:
+                    selected_ids.append(sid)
+        return selected_ids if selected_ids else [it.get("id", "") for it in items]
+    except Exception:
+        return [it.get("id", "") for it in items]
+
 # ========== 两阶段摘要（保留你原有接口与行为） ==========
 
 def build_llm_prompt(item: Dict[str, Any], lang: str = "zh", scope: str = "both"):

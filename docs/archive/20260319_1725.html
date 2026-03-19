@@ -74,11 +74,11 @@ summary{cursor:pointer;color:var(--acc)}
   <button class="btn" onclick="__expandAll(false)">Collapse All</button>
 </div>
 
-        <span class="badge">2026-03-19 17:26</span>
+        <span class="badge">2026-03-19 17:25</span>
       </div>
     </div>
     <div class="hr"></div>
-    <div>Latest digest</div>
+    <div>Snapshot: 20260319_1725</div>
     <div class="row"><div class="card">
 <div class="title">Search2Motion: Training-Free Object-Level Motion Control via Attention-Consensus Search</div>
 <div class="meta-line">Authors: Sainan Liu, Tz-Ying Wu, Hector A Valdez, Subarna Tripathi</div>
@@ -89,21 +89,21 @@ summary{cursor:pointer;color:var(--acc)}
 <div class="mono">We present Search2Motion, a training-free framework for object-level motion editing in image-to-video generation. Unlike prior methods requiring trajectories, bounding boxes, masks, or motion fields, Search2Motion adopts target-frame-based control, leveraging first-last-frame motion priors to realize object relocation while preserving scene stability without fine-tuning. Reliable target-frame construction is achieved through semantic-guided object insertion and robust background inpainting. We further show that early-step self-attention maps predict object and camera dynamics, offering interpretable user feedback and motivating ACE-Seed (Attention Consensus for Early-step Seed selection), a lightweight search strategy that improves motion fidelity without look-ahead sampling or external evaluators. Noting that existing benchmarks conflate object and camera motion, we introduce S2M-DAVIS and S2M-OMB for stable-camera, object-only evaluation, alongside FLF2V-obj metrics that isolate object artifacts without requiring ground-truth trajectories. Search2Motion consistently outperforms baselines on FLF2V-obj and VBench.</div></details>
 <details class="detail"><summary>中文标题/摘要</summary>
 <div class="mono"><b>标题：</b>Search2Motion：通过注意力共识搜索实现免训练的对象级运动控制</div>
-<div class="mono" style="margin-top:8px">我们提出 Search2Motion，这是一种用于图像到视频生成中对象级运动编辑的免训练框架。不同于以往需要轨迹、边界框、掩码或运动场的方法，Search2Motion 采用基于目标帧的控制方式，利用首尾帧运动先验，在无需微调的情况下实现对象重定位，同时保持场景稳定性。通过语义引导的对象插入和稳健的背景修复，可实现可靠的目标帧构建。我们进一步表明，早期步骤的自注意力图能够预测对象与相机动态，提供可解释的用户反馈，并由此提出 ACE-Seed（用于早期步骤种子选择的注意力共识），这是一种轻量级搜索策略，可在无需前瞻采样或外部评估器的情况下提升运动保真度。注意到现有基准混淆了对象运动与相机运动，我们引入了 S2M-DAVIS 和 S2M-OMB，用于稳定相机、仅对象运动的评估，并提出 FLF2V-obj 指标，在无需真实轨迹的情况下分离对象伪影。Search2Motion 在 FLF2V-obj 和 VBench 上持续优于基线方法。</div>
+<div class="mono" style="margin-top:8px">我们提出了 Search2Motion，一个用于图像到视频生成中对象级运动编辑的免训练框架。不同于以往依赖轨迹、边界框、掩码或运动场的方法，Search2Motion 采用基于目标帧的控制方式，利用首末帧运动先验，在无需微调的情况下实现对象重定位并保持场景稳定性。可靠的目标帧构建通过语义引导的对象插入与鲁棒的背景修补实现。我们进一步表明，早期步骤的自注意力图能够预测对象和相机动态，提供可解释的用户反馈，并由此提出 ACE-Seed（用于早期步骤种子选择的注意力共识），这是一种轻量级搜索策略，无需前瞻采样或外部评估器即可提升运动保真度。鉴于现有基准常将对象运动与相机运动混淆，我们引入了 S2M-DAVIS 和 S2M-OMB，用于稳定相机、仅含对象运动的评测，并提出 FLF2V-obj 指标，在无需真实轨迹的情况下分离对象伪影。Search2Motion 在 FLF2V-obj 和 VBench 上持续优于各类基线方法。</div>
 </details>
 <details class="detail" open><summary>Structured Analysis / 结构化分析</summary>
 <div style="margin-top:10px"><b>Motivation / 研究动机</b></div>
-<div class="mono" style="margin-left:12px">EN: Object-level motion editing in image-to-video generation usually depends on explicit trajectories, boxes, masks, or motion fields, making control cumbersome and less accessible. Existing evaluations also mix object motion with camera motion, obscuring whether methods truly improve object-specific editing quality.</div>
-<div class="mono" style="margin-left:12px">ZH: 图像到视频中的对象级运动编辑通常依赖显式轨迹、框、掩码或运动场，导致控制过程繁琐且可用性较差。现有评测还常将对象运动与相机运动混在一起，难以判断方法是否真正提升了对象级编辑质量。</div>
+<div class="mono" style="margin-left:12px">EN: Existing image-to-video motion control methods typically depend on explicit trajectories, boxes, masks, or motion fields, making object-level editing cumbersome and less accessible. The paper targets controllable object relocation from only first-and-last-frame priors while keeping the rest of the scene temporally stable.</div>
+<div class="mono" style="margin-left:12px">ZH: 现有图像到视频运动控制方法通常依赖显式轨迹、边界框、掩码或运动场，使目标级编辑流程繁琐且可用性较差。本文旨在仅利用首尾帧先验实现可控的目标重定位，同时保持场景其余部分的时间稳定性。</div>
 <div style="margin-top:10px"><b>Method & Architecture / 方法与架构</b></div>
-<div class="mono" style="margin-left:12px">EN: Search2Motion is a training-free target-frame-based framework that relocates objects using first-and-last-frame motion priors, with semantic-guided object insertion and background inpainting to build reliable target frames. Its main novelty is ACE-Seed, which searches early-step self-attention consensus to pick better seeds for motion generation without look-ahead sampling or external scoring models.</div>
-<div class="mono" style="margin-left:12px">ZH: Search2Motion 是一种免训练的基于目标帧的框架，利用首尾帧运动先验进行对象重定位，并通过语义引导的对象插入与背景修复构建可靠的目标帧。其主要创新是 ACE-Seed，通过搜索早期步骤自注意力的一致性来选择更优随机种子，从而在无需前瞻采样或外部评分模型的情况下提升运动生成质量。</div>
+<div class="mono" style="margin-left:12px">EN: Search2Motion is a training-free target-frame-based framework that constructs a desired endpoint by semantic-guided object insertion plus background inpainting, then steers generation toward that object motion. Its key novelty is ACE-Seed, which searches early-step self-attention consensus to select seeds that better align predicted object and camera dynamics without external scoring or look-ahead sampling.</div>
+<div class="mono" style="margin-left:12px">ZH: Search2Motion 是一种无需训练、基于目标帧的框架，它通过语义引导的目标插入和背景修复来构造期望终态，并据此引导生成过程实现目标运动。其关键创新是 ACE-Seed，它利用早期步骤自注意力的一致性进行种子搜索，在无需外部评分器或前瞻采样的情况下选择更符合目标与相机动态预测的种子。</div>
 <div style="margin-top:10px"><b>Experiments / 实验结果</b></div>
-<div class="mono" style="margin-left:12px">EN: The paper introduces S2M-DAVIS and S2M-OMB for stable-camera object-only evaluation, and proposes FLF2V-obj metrics to measure object artifacts without ground-truth trajectories. On these new protocols as well as VBench, Search2Motion consistently outperforms prior baselines.</div>
-<div class="mono" style="margin-left:12px">ZH: 论文提出了用于稳定相机、仅评估对象运动的 S2M-DAVIS 和 S2M-OMB 数据集，并设计了无需真实轨迹即可衡量对象伪影的 FLF2V-obj 指标。在这些新评测协议以及 VBench 上，Search2Motion 都持续优于已有基线方法。</div>
+<div class="mono" style="margin-left:12px">EN: The authors introduce S2M-DAVIS and S2M-OMB, two stable-camera benchmarks for object-only motion evaluation, and propose FLF2V-obj metrics to measure object artifacts without ground-truth trajectories. On these new metrics and on VBench, Search2Motion consistently outperforms prior baselines.</div>
+<div class="mono" style="margin-left:12px">ZH: 作者提出了 S2M-DAVIS 和 S2M-OMB 两个稳定相机场景下的纯目标运动评测基准，并设计了无需真实轨迹标注即可衡量目标伪影的 FLF2V-obj 指标。在这些新指标以及 VBench 上，Search2Motion 都持续优于已有基线方法。</div>
 <div style="margin-top:10px"><b>Limitations / 局限性</b></div>
-<div class="mono" style="margin-left:12px">EN: Because the approach relies on first-last-frame priors and target-frame construction quality, its robustness for highly complex motions or difficult insertion/inpainting cases remains an open question.</div>
-<div class="mono" style="margin-left:12px">ZH: 由于该方法依赖首尾帧先验以及目标帧构建质量，其在高度复杂运动或困难插入与修复场景中的鲁棒性仍有待验证。</div>
+<div class="mono" style="margin-left:12px">EN: Because the approach relies on first-last-frame priors and attention-based seed search, its robustness for highly complex motions or scenes with strong occlusion and ambiguity remains an open question.</div>
+<div class="mono" style="margin-left:12px">ZH: 由于该方法依赖首尾帧先验和基于注意力的种子搜索，它在高度复杂运动或存在严重遮挡与歧义的场景中的稳健性仍有待验证。</div>
 </details>
 </div>
 <div class="card">
@@ -115,13 +115,12 @@ summary{cursor:pointer;color:var(--acc)}
 <details class="detail"><summary>Abstract</summary>
 <div class="mono">We present a training-free framework for continuous and controllable image editing at test time for text-conditioned generative models. In contrast to prior approaches that rely on additional training or manual user intervention, we find that a simple steering in the text-embedding space is sufficient to produce smooth edit control. Given a target concept (e.g., enhancing photorealism or changing facial expression), we use a large language model to automatically construct a small set of debiased contrastive prompt pairs, from which we compute a steering vector in the generator&#x27;s text-encoder space. We then add this vector directly to the input prompt representation to control generation along the desired semantic axis. To obtain a continuous control, we propose an elastic range search procedure that automatically identifies an effective interval of steering magnitudes, avoiding both under-steering (no-edit) and over-steering (changing other attributes). Adding the scaled versions of the same vector within this interval yields smooth and continuous edits. Since our method modifies only textual representations, it naturally generalizes across text-conditioned modalities, including image and video generation. To quantify the steering continuity, we introduce a new evaluation metric that measures the uniformity of semantic change across edit strengths. We compare the continuous editing behavior across methods and find that, despite its simplicity and lightweight design, our approach is comparable to training-based alternatives, outperforming other training-free methods.</div></details>
 <details class="detail"><summary>中文标题/摘要</summary>
-<div class="mono"><b>标题：</b>用于连续图像操控的文本嵌入插值的非凡有效性</div>
-<div class="mono" style="margin-top:8px">我们提出了一个无需训练的框架，用于在测试时对文本条件生成模型进行连续且可控的图像编辑。与依赖额外训练或人工用户干预的先前方法不同，我们发现，仅在文本嵌入空间中进行简单操控，就足以实现平滑的编辑控制。给定一个目标概念（例如增强照片真实感或改变面部表情），我们使用大型语言模型自动构造一小组去偏的对比提示词对，并据此在生成器的文本编码器空间中计算一个操控向量。随后，我们将该向量直接加到输入提示词表示上，以沿所需语义轴控制生成。为实现连续控制，我们提出一种弹性范围搜索过程，可自动识别有效的操控幅度区间，避免操控不足（无编辑）和操控过度（改变其他属性）。在该区间内加入同一向量的不同比例版本，可得到平滑且连续的编辑。由于我们的方法仅修改文本表示，因此能够自然泛化到各种文本条件模态，包括图像和视频生成。为量化操控的连续性，我们引入了一种新的评估指标，用于衡量不同编辑强度下语义变化的一致性。我们比较了不同方法的连续编辑行为，发现尽管我们的方法简单且轻量，但其效果可与基于训练的替代方案相当，并优于其他无需训练的方法。</div>
+<div class="mono"><b>标题：</b>文本嵌入插值在连续图像引导中的非凡有效性</div>
+<div class="mono" style="margin-top:8px">我们提出了一种无需训练的框架，用于文本条件生成模型在测试时进行连续且可控的图像编辑。不同于以往依赖额外训练或人工用户干预的方法，我们发现，仅在文本嵌入空间中进行简单引导，就足以实现平滑的编辑控制。给定一个目标概念（例如增强照片真实感或改变面部表情），我们使用大型语言模型自动构建一小组去偏的对比提示词对，并据此在生成器的文本编码器空间中计算一个引导向量。随后，我们将该向量直接加到输入提示表示上，以沿所需语义轴控制生成。为实现连续控制，我们提出了一种弹性范围搜索过程，可自动识别有效的引导幅度区间，避免引导不足（无编辑）和引导过度（改变其他属性）。在该区间内加入同一向量的不同比例缩放版本，可得到平滑且连续的编辑。由于我们的方法只修改文本表示，因此可自然泛化到各种文本条件模态，包括图像和视频生成。为量化引导的连续性，我们引入了一种新的评估指标，用于衡量不同编辑强度下语义变化的一致性。我们比较了不同方法的连续编辑行为，发现尽管该方法简单且轻量，但其效果可与基于训练的替代方法相当，并优于其他无需训练的方法。</div>
 </details>
 </div></div>
     <details style="margin-top:16px" class="detail"><summary>History</summary>
-      <div class="history-list"><a href="archive/20260319_1726.html">20260319_1726</a>
-<a href="archive/20260319_1725.html">20260319_1725</a></div>
+      <div class="history-list"><a href="./20260319_1725.html">20260319_1725</a></div>
     </details>
     <div class="footer">Generated by arxiv-tracker</div>
   </div>

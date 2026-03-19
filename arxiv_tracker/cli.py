@@ -291,10 +291,39 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
             except Exception as e:
                 click.secho(f"[Scrape] 补链失败 {(it.get('id') or '')[:18]}...: {e}", fg="yellow")
 
+        # 2.5) LLM 预筛选：基于标题+摘要片段选择最相关的论文
+        filter_cfg = (raw_cfg.get("filter") or {}) if 'raw_cfg' in locals() else {}
+        filter_enabled = bool(filter_cfg.get("enabled", False))
+        selected_ids = None
+        if filter_enabled and items and mode == "llm":
+            api_key = (llm_cfg.get("api_key")
+                       or os.getenv(llm_cfg.get("api_key_env") or "OPENAI_API_KEY", ""))
+            if api_key:
+                from .llm import call_llm_filter_papers
+                top_k = int(filter_cfg.get("top_k", 20))
+                custom_prompt = filter_cfg.get("prompt", "")
+                kw_list = raw_cfg.get("keywords", []) if 'raw_cfg' in locals() else []
+                try:
+                    selected_ids = call_llm_filter_papers(
+                        items=items, keywords=kw_list,
+                        base_url=llm_cfg.get("base_url", ""),
+                        model=llm_cfg.get("model", ""),
+                        api_key=api_key,
+                        top_k=top_k,
+                        custom_prompt=custom_prompt,
+                    )
+                    click.echo(f"[Filter] LLM 筛选：{len(items)} 篇 → {len(selected_ids)} 篇相关论文")
+                except Exception as e:
+                    click.secho(f"[Filter] LLM 筛选失败，跳过筛选：{e}", fg="yellow")
+                    selected_ids = None
+
         # 3) 摘要（单次调用即含中英双语，无需分语言重复调用）
+        #    如果启用了预筛选，只对选中的论文生成详细摘要
         summaries_zh, summaries_en = {}, {}
         for it in items:
             sid = it.get("id") or ""
+            if selected_ids is not None and sid not in selected_ids:
+                continue  # 未选中的论文跳过 LLM 摘要，节省 token
             summaries_zh[sid] = build_two_stage_summary(item=it, mode=mode, lang=lang, scope=scope, llm_cfg=llm_cfg)
 
         # 4) 翻译（中文）

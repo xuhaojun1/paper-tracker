@@ -61,6 +61,13 @@ llm:
     包含研究动机、核心方法与关键实验结果。保持客观、术语准确；避免营销式表述。
     如有链接请保留，但不要在总结里重复链接。
 
+# —— LLM 预筛选（基于标题+摘要片段，让 LLM 选择最相关的论文） ——
+# 只对选中的论文生成详细摘要和翻译，其余论文仅保留基本信息，节省 token
+filter:
+  enabled: true
+  top_k: 20              # 最多保留几篇（从 max_results 中筛选）
+  # prompt: ""           # 可选自定义筛选 prompt，留空则使用默认（基于 keywords 判断相关性）
+
 # —— 中文翻译设置（用 LLM 翻译 title/summary） ——
 translate:
   enabled: true         # 是否启用
@@ -71,7 +78,7 @@ site:
   enabled: true
   dir: "docs" 
   title: "Paper Tracker 论文速递"
-  keep_runs: 1024         # 历史保留期（按页面份数）
+  keep_runs: 30           # 历史保留期（按页面份数，约 3 个月）
   theme: "light"        # "light" | "dark" | "auto"
   accent: "#2563eb"     # 主题色（可自定义）
 
