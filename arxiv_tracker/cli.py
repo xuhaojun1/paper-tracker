@@ -291,19 +291,11 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
             except Exception as e:
                 click.secho(f"[Scrape] 补链失败 {(it.get('id') or '')[:18]}...: {e}", fg="yellow")
 
-        # 3) 摘要
+        # 3) 摘要（单次调用即含中英双语，无需分语言重复调用）
         summaries_zh, summaries_en = {}, {}
-        def _sum_for_lang(L):
-            out = {}
-            for it in items:
-                sid = it.get("id") or ""
-                out[sid] = build_two_stage_summary(item=it, mode=mode, lang=L, scope=scope, llm_cfg=llm_cfg)
-            return out
-
-        if lang in ("zh", "both"):
-            summaries_zh = _sum_for_lang("zh")
-        if lang in ("en", "both"):
-            summaries_en = _sum_for_lang("en")
+        for it in items:
+            sid = it.get("id") or ""
+            summaries_zh[sid] = build_two_stage_summary(item=it, mode=mode, lang=lang, scope=scope, llm_cfg=llm_cfg)
 
         # 4) 翻译（中文）
         translations = {}

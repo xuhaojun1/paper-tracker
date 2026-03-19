@@ -102,10 +102,9 @@ def call_llm_bilingual_summary(
     venue   = item.get("venue_inferred") or (item.get("journal_ref") or "")
 
     sys_prompt = (
-        "You are a senior AI research assistant. "
-        "Your task is to produce a structured bilingual analysis of academic papers. "
-        "Be precise, objective, and technical. Keep each field concise (2-4 sentences). "
-        "Preserve technical terms in both languages."
+        "You are a concise AI research analyst. "
+        "Extract KEY UNIQUE information for each dimension — do NOT repeat or paraphrase the same point across dimensions. "
+        "Each field: strictly 1-2 sentences, information-dense, no filler."
     )
 
     user_payload = {
@@ -116,32 +115,33 @@ def call_llm_bilingual_summary(
 
     schema_desc = (
         '{\n'
-        '  "motivation_en": "Why this work? What problem/gap does it address? (2-3 sentences, English)",\n'
-        '  "motivation_zh": "研究动机与要解决的问题（2-3句，中文）",\n'
-        '  "method_en": "Core method, model architecture, key design choices (2-4 sentences, English)",\n'
-        '  "method_zh": "核心方法、模型架构、关键设计（2-4句，中文）",\n'
-        '  "experiments_en": "Key experimental results, benchmarks, comparisons (2-3 sentences, English)",\n'
-        '  "experiments_zh": "关键实验结果、基准测试、对比（2-3句，中文）",\n'
-        '  "limitations_en": "Limitations, open questions, or future work (1-2 sentences, English)",\n'
-        '  "limitations_zh": "局限性、待解决问题或未来方向（1-2句，中文）"\n'
+        '  "motivation_en": "(1-2 sentences) What specific problem/gap? Do NOT repeat method details.",\n'
+        '  "method_en": "(1-2 sentences) Core technique, architecture name, key novelty. No motivation/results.",\n'
+        '  "experiments_en": "(1-2 sentences) Benchmarks, metrics, key numbers if available. No method recap.",\n'
+        '  "limitations_en": "(1 sentence) Main limitation or open question.",\n'
+        '  "motivation_zh": "(motivation_en 的简体中文翻译)",\n'
+        '  "method_zh": "(method_en 的简体中文翻译)",\n'
+        '  "experiments_zh": "(experiments_en 的简体中文翻译)",\n'
+        '  "limitations_zh": "(limitations_en 的简体中文翻译)"\n'
         '}'
     )
 
     messages = [
         {"role": "system", "content": sys_prompt},
         {"role": "user", "content":
-            "Given the paper metadata below, produce a STRUCTURED bilingual analysis.\n"
-            "For each of the 4 dimensions, write both English and Chinese versions.\n"
-            "Be specific about model architecture and technical details when available.\n"
-            "Do not include links, bullet lists, markdown, or headings. Plain sentences only.\n"
-            f"Return STRICT JSON with exactly these keys:\n{schema_desc}\n\n"
+            "Analyze this paper. Rules:\n"
+            "1. Write English analysis FIRST (4 fields), each 1-2 sentences MAX.\n"
+            "2. Then translate each English field to Simplified Chinese (4 _zh fields).\n"
+            "3. Each dimension must contain DIFFERENT information — zero overlap.\n"
+            "4. No links, no bullet lists, no markdown. Plain sentences only.\n"
+            f"Return STRICT JSON:\n{schema_desc}\n\n"
             f"DATA:\n{json.dumps(user_payload, ensure_ascii=False)}"
         }
     ]
 
     text = _chat_completions_request(
         base_url=base_url, api_key=api_key, model=model, messages=messages,
-        temperature=0.2, max_tokens=1200
+        temperature=0.2, max_tokens=800
     )
     data = _json_loose(text)
     fields = ["motivation_en", "motivation_zh", "method_en", "method_zh",

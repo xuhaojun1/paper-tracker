@@ -104,6 +104,11 @@ python -m arxiv_tracker.cli run --config config.yaml --site-dir docs --verbose
 
 ---
 
+## git连接配置
+```bash
+git remote set-url origin git@github.com:xuhaojun1/paper-tracker.git
+```
+
 ## 配置说明
 
 所有配置在 `config.yaml` 中，主要字段：
