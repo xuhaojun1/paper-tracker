@@ -68,7 +68,6 @@
 
 ### 自动提交（Actions）
 - Actions 运行后自动提交 `docs/**`、`outputs/**`、`.state/**`
-- commit message 统一为 `chore: update digest, site & dedup state`
 
 ---
 

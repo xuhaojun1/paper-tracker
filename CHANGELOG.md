@@ -4,6 +4,28 @@
 
 ---
 
+## [0.2.0] - 2026-03-19
+
+### LLM 结构化摘要 & 输出优化
+
+**Changed**
+- `llm.py`：LLM 摘要改为结构化四维度分析（motivation / method / experiments / limitations），先生成英文再翻译中文，每维度严格 1-2 句，减少冗余
+- `llm.py`：`max_tokens` 从 600 → 800，单次调用同时输出中英双语（之前每篇论文调 2 次 LLM，现在只调 1 次）
+- `summarizer.py`：`build_two_stage_summary` 适配新的 8 字段结构，`heuristic_paragraphs` 兜底同步更新
+- `output.py`：去掉 `[中文]` / `[English]` 重复区块，改为单个合并的「Structured Analysis / 结构化分析」区块
+- `sitegen.py`：GitHub Pages 卡片渲染适配结构化四维度分析（默认展开）
+- `email_template.py`：邮件 HTML 模板同步适配结构化分析
+- `cli.py`：`lang="both"` 时只调用一次 summary，不再分 zh/en 重复调用
+- Git remote 从 HTTPS 切换为 SSH（`git@github.com:xuhaojun1/paper-tracker.git`）
+
+**Fixed**
+- `output.py`：修复 `digest_en` / `digest_zh` 不渲染的 bug（旧代码只检查 `tldr` / `full_md`）
+
+**Removed**
+- `docs/archive/` 中原仓库遗留的 252 个旧归档 HTML 文件（2025-08 ~ 2026-03-18），只保留自己生成的
+
+---
+
 ## [0.1.0] - 2025-03-19
 
 ### 基于 Arxiv-tracker 的初始定制化版本
