@@ -28,12 +28,10 @@ summary:
   scope: "both"
 
 # —— 邮件发送（QQ 邮箱） ——
+# sender / smtp_user / to 统一通过环境变量 EMAIL_ADDR 注入，避免泄露邮箱
+# 如需分别指定，可设 EMAIL_SENDER / SMTP_USER / EMAIL_TO 环境变量
 email:
   enabled: true
-  sender: "1017078978@qq.com"
-  smtp_user: "1017078978@qq.com"
-  to:
-    - "1017078978@qq.com"
   subject: "[Paper Tracker] 论文速递"
   smtp_server: "smtp.qq.com"
   smtp_port: 465

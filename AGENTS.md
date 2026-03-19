@@ -98,15 +98,3 @@
 所有有意义的变更需记录到 `CHANGELOG.md`，格式参照该文件中的现有条目。
 
 ---
-
-## 追踪方向管理
-
-当前追踪方向在 `config.yaml` 的 `keywords` 中配置：
-- 视频生成 / 世界模型：`video generation`, `world model`
-- VLA：`vision-language-action`, `VLA`
-- 3D 重建：`3D reconstruction`, `VGGT`, `3D Gaussian`
-
-修改追踪方向时：
-1. 编辑 `config.yaml` 的 `keywords` 列表
-2. 同步更新 `README.md` 中的"当前追踪方向"
-3. 如有必要，调整 `categories` 和 `exclude_keywords`

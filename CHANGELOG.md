@@ -17,6 +17,9 @@
 - `email_template.py`：邮件 HTML 模板同步适配结构化分析
 - `cli.py`：`lang="both"` 时只调用一次 summary，不再分 zh/en 重复调用
 - Git remote 从 HTTPS 切换为 SSH（`git@github.com:xuhaojun1/paper-tracker.git`）
+- `config.yaml`：邮箱地址从硬编码改为通过环境变量 `EMAIL_ADDR` 统一注入（避免公开仓库泄露邮箱）
+- `cli.py`：支持 `EMAIL_ADDR` 环境变量同时作为 sender / smtp_user / to
+- `digest.yml`：移除所有 Variables 引用，只需 3 个 Secrets（`OPENAI_COMPAT_API_KEY` / `EMAIL_ADDR` / `SMTP_PASS`）
 
 **Fixed**
 - `output.py`：修复 `digest_en` / `digest_zh` 不渲染的 bug（旧代码只检查 `tldr` / `full_md`）

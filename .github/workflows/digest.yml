@@ -72,13 +72,15 @@ jobs:
           NAME="${REPO#*/}"
           echo "url=https://${OWNER}.github.io/${NAME}/" >> $GITHUB_OUTPUT
 
-      # 检查密钥是否已注入（邮箱地址已在 config.yaml 中配置，只需 SMTP_PASS）
+      # 检查密钥是否已注入
       - name: Show secrets status
         env:
+          EMAIL_ADDR: ${{ secrets.EMAIL_ADDR }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
         run: |
           python - <<'PY'
           import os
+          print("HAS_EMAIL_ADDR:", bool(os.getenv('EMAIL_ADDR')))
           print("HAS_SMTP_PASS:", bool(os.getenv('SMTP_PASS')))
           PY
 
@@ -101,7 +103,8 @@ jobs:
         env:
           # LLM（OpenAI 兼容中转站）
           OPENAI_COMPAT_API_KEY: ${{ secrets.OPENAI_COMPAT_API_KEY }}
-          # 邮件密码（邮箱地址等已在 config.yaml 中配置）
+          # 邮箱地址（sender/smtp_user/to 统一）+ SMTP 密码
+          EMAIL_ADDR: ${{ secrets.EMAIL_ADDR }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
 
           # 提升 arXiv API 抗抖参数

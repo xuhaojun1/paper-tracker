@@ -409,14 +409,16 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
                     email_cfg["enabled"] = False
 
                 if email_cfg.get("enabled"):
-                    # 环境变量优先（适合 GitHub Actions）
-                    env_to = os.getenv("EMAIL_TO", "")
+                    # EMAIL_ADDR 统一环境变量：同时作为 sender / smtp_user / to
+                    # 也可分别用 EMAIL_SENDER / SMTP_USER / EMAIL_TO 覆盖
+                    email_addr = os.getenv("EMAIL_ADDR", "")
+                    env_to = os.getenv("EMAIL_TO", "") or email_addr
                     to_list = [x.strip() for x in re.split(r"[;,]", env_to) if x.strip()] if env_to else (email_cfg.get("to") or [])
-                    sender_env = os.getenv("EMAIL_SENDER", "")
+                    sender_env = os.getenv("EMAIL_SENDER", "") or email_addr
                     sender = sender_env or (email_cfg.get("sender") or "")
                     server  = os.getenv("SMTP_SERVER", "") or email_cfg.get("smtp_server") or "smtp.qq.com"
                     port    = int(os.getenv("SMTP_PORT", "") or email_cfg.get("smtp_port") or 465)
-                    user_env= os.getenv("SMTP_USER", "")
+                    user_env= os.getenv("SMTP_USER", "") or email_addr
                     user    = user_env or (email_cfg.get("smtp_user") or sender)
                     pass_env= email_cfg.get("smtp_pass_env") or "SMTP_PASS"
                     passwd  = os.getenv(pass_env, "")

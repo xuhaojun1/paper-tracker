@@ -55,9 +55,11 @@ git clone https://github.com/xuhaojun1/paper-tracker.git
 | 名称 | 说明 |
 |------|------|
 | `OPENAI_COMPAT_API_KEY` | OpenAI 兼容 API Key（中转站 / DeepSeek / SiliconFlow） |
+| `EMAIL_ADDR` | 邮箱地址（同时用作发件人、SMTP 用户名、收件人） |
 | `SMTP_PASS` | 邮箱 SMTP 授权码（QQ 用授权码，Gmail 用应用专用密码） |
 
-> 邮箱地址、SMTP 服务器等已在 `config.yaml` 中配置，**无需设置 Variables**。
+> SMTP 服务器等已在 `config.yaml` 中配置，**无需设置 Variables**。
+> 如需分别指定发件人/收件人，可额外设置 `EMAIL_SENDER` / `EMAIL_TO` / `SMTP_USER`。
 
 ### 3) 启用 GitHub Pages
 
@@ -77,6 +79,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 export OPENAI_COMPAT_API_KEY="your-key"
+export EMAIL_ADDR="your@qq.com"
 export SMTP_PASS="your-smtp-password"   # QQ 邮箱授权码
 
 # 不发邮件测试
