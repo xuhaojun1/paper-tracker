@@ -1,0 +1,34 @@
+[
+  {
+    "id": "http://arxiv.org/abs/2603.17989v1",
+    "title": "Versatile Editing of Video Content, Actions, and Dynamics without Training",
+    "authors": [
+      "Vladimir Kulikov",
+      "Roni Paiss",
+      "Andrey Voynov",
+      "Inbar Mosseri",
+      "Tali Dekel",
+      "Tomer Michaeli"
+    ],
+    "primary_category": null,
+    "categories": [
+      "cs.CV"
+    ],
+    "published": "2026-03-18T17:50:56+00:00",
+    "updated": "2026-03-18T17:50:56+00:00",
+    "comments": "Project page at https://dynaedit.github.io/",
+    "journal_ref": null,
+    "venue_inferred": null,
+    "summary": "Controlled video generation has seen drastic improvements in recent years. However, editing actions and dynamic events, or inserting contents that should affect the behaviors of other objects in real-world videos, remains a major challenge. Existing trained models struggle with complex edits, likely due to the difficulty of collecting relevant training data. Similarly, existing training-free methods are inherently restricted to structure- and motion-preserving edits and do not support modification of motion or interactions. Here, we introduce DynaEdit, a training-free editing method that unlocks versatile video editing capabilities with pretrained text-to-video flow models. Our method relies on the recently introduced inversion-free approach, which does not intervene in the model internals, and is thus model-agnostic. We show that naively attempting to adapt this approach to general unconstrained editing results in severe low-frequency misalignment and high-frequency jitter. We explain the sources for these phenomena and introduce novel mechanisms for overcoming them. Through extensive experiments, we show that DynaEdit achieves state-of-the-art results on complex text-based video editing tasks, including modifying actions, inserting objects that interact with the scene, and introducing global effects.",
+    "html_url": "https://arxiv.org/abs/2603.17989v1",
+    "pdf_url": "https://arxiv.org/pdf/2603.17989v1",
+    "code_urls": [
+      "https://huggingface.co/huggingface",
+      "https://huggingface.co/docs/hub/spaces"
+    ],
+    "project_urls": [
+      "https://dynaedit.github.io/"
+    ],
+    "other_urls": []
+  }
+]

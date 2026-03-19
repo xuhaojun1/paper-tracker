@@ -3,8 +3,6 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg?style=flat-square)](./LICENSE)
 
-> 基于 [Arxiv-tracker](https://github.com/colorfulandcjy0806/Arxiv-tracker) 二次开发，感谢原作者。
-
 **每 3 天自动检索 arXiv 论文 → LLM 双语总结 → 邮件推送 + GitHub Pages 发布。**
 
 当前追踪方向：
@@ -50,31 +48,16 @@ CHANGELOG.md          # 版本记录
 git clone https://github.com/xuhaojun1/paper-tracker.git
 ```
 
-### 2) 配置 GitHub Secrets & Variables
+### 2) 配置 GitHub Secrets
 
-> Settings → **Secrets and variables** → **Actions**
-
-**Secrets（必填）**
+> Settings → **Secrets and variables** → **Actions** → **Secrets**
 
 | 名称 | 说明 |
 |------|------|
 | `OPENAI_COMPAT_API_KEY` | OpenAI 兼容 API Key（中转站 / DeepSeek / SiliconFlow） |
 | `SMTP_PASS` | 邮箱 SMTP 授权码（QQ 用授权码，Gmail 用应用专用密码） |
 
-**Variables（必填）**
-
-| 名称 | 说明 | 示例 |
-|------|------|------|
-| `EMAIL_TO` | 收件人（多个用 `,` 分隔） | `a@qq.com,b@gmail.com` |
-| `EMAIL_SENDER` | 发件人邮箱 | `xxx@qq.com` |
-| `SMTP_USER` | SMTP 用户名（通常 = 发件人） | `xxx@qq.com` |
-
-**Variables（可选，用于切换邮件服务商）**
-
-| 名称 | 默认值 | Gmail 设置 |
-|------|--------|-----------|
-| `SMTP_SERVER` | `smtp.qq.com` | `smtp.gmail.com` |
-| `SMTP_PORT` | `465` | `465` |
+> 邮箱地址、SMTP 服务器等已在 `config.yaml` 中配置，**无需设置 Variables**。
 
 ### 3) 启用 GitHub Pages
 
@@ -94,11 +77,12 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 export OPENAI_COMPAT_API_KEY="your-key"
-export EMAIL_TO="your@email.com"
-export EMAIL_SENDER="your@email.com"
-export SMTP_USER="your@email.com"
-export SMTP_PASS="your-smtp-password"
+export SMTP_PASS="your-smtp-password"   # QQ 邮箱授权码
 
+# 不发邮件测试
+python -m arxiv_tracker.cli run --config config.yaml --no-email --verbose
+
+# 完整运行（含邮件）
 python -m arxiv_tracker.cli run --config config.yaml --site-dir docs --verbose
 ```
 

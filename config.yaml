@@ -30,6 +30,10 @@ summary:
 # —— 邮件发送（QQ 邮箱） ——
 email:
   enabled: true
+  sender: "1017078978@qq.com"
+  smtp_user: "1017078978@qq.com"
+  to:
+    - "1017078978@qq.com"
   subject: "[Paper Tracker] 论文速递"
   smtp_server: "smtp.qq.com"
   smtp_port: 465
