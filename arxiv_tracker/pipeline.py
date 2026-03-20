@@ -8,16 +8,14 @@ import json
 import re
 import pathlib
 import time
-import click
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional, Set, Tuple
 
-from .query import build_search_query
-from .client import fetch_arxiv_feed
-from .parser import parse_feed
-from .summarizer import build_two_stage_summary
-from .llm import call_llm_translate, call_llm_score_papers, call_llm_rich_summary
-from .html_fetcher import get_rich_context
+from .search import build_search_query, fetch_arxiv_feed, parse_feed, get_rich_context
+from .search.scraper import augment_item_links
+from .llm import call_llm_translate, call_llm_score_papers, call_llm_rich_summary, build_two_stage_summary
+from .utils.logging import log_info, log_warn, log_error, log_debug
+from .utils.state import load_seen_ids, save_seen_ids
 
 
 def _parse_dt(s: str) -> Optional[datetime]:
@@ -30,31 +28,6 @@ def _parse_dt(s: str) -> Optional[datetime]:
         return None
 
 
-def load_seen_ids(state_path: str) -> Set[str]:
-    """读取已见 ID 集合（兼容 list / {"ids":[...]} / {id: timestamp} 三种格式）"""
-    try:
-        if os.path.exists(state_path):
-            with open(state_path, "r", encoding="utf-8") as f:
-                j = json.load(f) or {}
-                if isinstance(j, dict) and "ids" in j:
-                    return set(j.get("ids") or [])
-                elif isinstance(j, dict):
-                    return set(j.keys())
-                elif isinstance(j, list):
-                    return set(j)
-    except Exception:
-        pass
-    return set()
-
-
-def save_seen_ids(state_path: str, seen_ids: Set[str]):
-    """持久化去重状态"""
-    p = pathlib.Path(state_path)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", encoding="utf-8") as f:
-        json.dump({"ids": sorted(seen_ids)}, f, ensure_ascii=False, indent=2)
-
-
 def fetch_papers(
     cfg,
     raw_cfg: Dict[str, Any],
@@ -65,7 +38,7 @@ def fetch_papers(
     返回候选论文列表。
     """
     q = build_search_query(cfg.categories, cfg.keywords, cfg.exclude_keywords, cfg.logic)
-    click.echo(f"[Query] {q}")
+    log_info(f"[Query] {q}")
 
     fresh_cfg = raw_cfg.get("freshness") or {}
     since_days = int(fresh_cfg.get("since_days", 0) or 0)
@@ -117,9 +90,9 @@ def fetch_papers(
         collected = parse_feed(xml) or []
 
     if not collected:
-        click.secho("[Info] No new items after pagination/freshness/dedup filter.", fg="yellow")
+        log_warn("[Info] No new items after pagination/freshness/dedup filter.")
     else:
-        click.echo(f"[Info] Fetched {len(collected)} new item(s) after pagination/dedup.")
+        log_info(f"[Info] Fetched {len(collected)} new item(s) after pagination/dedup.")
 
     return collected
 
@@ -130,8 +103,6 @@ def augment_links(
     verbose: bool = False,
 ):
     """阶段 2：补全代码/项目链接（HTML 页 + PDF 兜底）"""
-    from .extrascrape import augment_item_links
-
     scrape_cfg = raw_cfg.get("scrape") or {}
     scrape_html = bool(scrape_cfg.get("html", True))
     scrape_pdf_if_missing = bool(scrape_cfg.get("pdf_if_missing", True))
@@ -139,8 +110,8 @@ def augment_links(
     scrape_to = int(scrape_cfg.get("timeout", 10))
 
     if verbose:
-        click.echo(f"[Scrape] html={scrape_html} pdf_if_missing={scrape_pdf_if_missing} "
-                    f"pdf_first_page={scrape_pdf_always} timeout={scrape_to}")
+        log_debug(f"[Scrape] html={scrape_html} pdf_if_missing={scrape_pdf_if_missing} "
+                  f"pdf_first_page={scrape_pdf_always} timeout={scrape_to}")
 
     for it in items:
         try:
@@ -152,9 +123,9 @@ def augment_links(
                 timeout=scrape_to,
             )
             if verbose and added > 0:
-                click.echo(f"[Scrape] +{added} code link(s) for {(it.get('id') or '')[:32]}")
+                log_debug(f"[Scrape] +{added} code link(s) for {(it.get('id') or '')[:32]}")
         except Exception as e:
-            click.secho(f"[Scrape] 补链失败 {(it.get('id') or '')[:18]}...: {e}", fg="yellow")
+            log_warn(f"[Scrape] 补链失败 {(it.get('id') or '')[:18]}...: {e}")
 
 
 def score_and_filter(
@@ -176,7 +147,7 @@ def score_and_filter(
     api_key = (llm_cfg.get("api_key")
                or os.getenv(llm_cfg.get("api_key_env") or "OPENAI_API_KEY", ""))
     if not api_key:
-        click.secho("[Score] 跳过：未找到 LLM API Key", fg="yellow")
+        log_warn("[Score] 跳过：未找到 LLM API Key")
         return items, {}
 
     top_k = int(filter_cfg.get("top_k", 50))
@@ -192,7 +163,7 @@ def score_and_filter(
             top_k=top_k,
             custom_prompt=custom_prompt,
         )
-        click.echo(f"[Score] LLM 打分完成：{len(items)} 篇 → 保留 {len(scored)} 篇")
+        log_info(f"[Score] LLM 打分完成：{len(items)} 篇 → 保留 {len(scored)} 篇")
 
         # 构建 score 映射
         score_map = {s["id"]: {"score": s["score"], "reason": s["reason"]} for s in scored}
@@ -210,12 +181,12 @@ def score_and_filter(
 
         if verbose:
             for s in scored[:5]:
-                click.echo(f"  [{s['score']:2d}] {id_to_item.get(s['id'], {}).get('title', '?')[:60]}")
-                click.echo(f"       {s['reason']}")
+                log_debug(f"  [{s['score']:2d}] {id_to_item.get(s['id'], {}).get('title', '?')[:60]}")
+                log_debug(f"       {s['reason']}")
 
         return sorted_items, score_map
     except Exception as e:
-        click.secho(f"[Score] LLM 打分失败，跳过筛选：{e}", fg="yellow")
+        log_warn(f"[Score] LLM 打分失败，跳过筛选：{e}")
         return items, {}
 
 
@@ -242,7 +213,7 @@ def fetch_html_content(
     for i, it in enumerate(items):
         sid = it.get("id") or ""
         if verbose and i % 10 == 0:
-            click.echo(f"[HTML] 抓取论文全文 {i+1}/{total}...")
+            log_debug(f"[HTML] 抓取论文全文 {i+1}/{total}...")
         try:
             ctx = get_rich_context(it, timeout=html_timeout)
             if ctx and len(ctx) > 200:  # 有实质内容
@@ -250,9 +221,9 @@ def fetch_html_content(
                 success += 1
         except Exception as e:
             if verbose:
-                click.secho(f"[HTML] 抓取失败 {sid[:18]}...: {e}", fg="yellow")
+                log_warn(f"[HTML] 抓取失败 {sid[:18]}...: {e}")
 
-    click.echo(f"[HTML] 全文抓取完成：{success}/{total} 篇成功")
+    log_info(f"[HTML] 全文抓取完成：{success}/{total} 篇成功")
     return rich_contexts
 
 
@@ -291,18 +262,18 @@ def generate_summaries(
                         api_key=api_key,
                     )
                     if verbose:
-                        click.echo(f"[Summary] {i+1}/{len(items)} (rich) {title_short}...")
+                        log_debug(f"[Summary] {i+1}/{len(items)} (rich) {title_short}...")
                 else:
                     # 回退到纯 abstract 版本
                     data = build_two_stage_summary(
                         item=it, mode=mode, lang=lang, scope=scope, llm_cfg=llm_cfg
                     )
                     if verbose:
-                        click.echo(f"[Summary] {i+1}/{len(items)} (abstract) {title_short}...")
+                        log_debug(f"[Summary] {i+1}/{len(items)} (abstract) {title_short}...")
 
                 summaries[sid] = data
             except Exception as e:
-                click.secho(f"[Summary] 失败 {sid[:18]}...: {e}", fg="yellow")
+                log_warn(f"[Summary] 失败 {sid[:18]}...: {e}")
                 summaries[sid] = build_two_stage_summary(
                     item=it, mode="heuristic", lang=lang, scope=scope
                 )
@@ -332,7 +303,7 @@ def translate_items(
     api_key = (llm_cfg.get("api_key")
                or os.getenv(llm_cfg.get("api_key_env") or "OPENAI_API_KEY", ""))
     if not api_key:
-        click.secho("[Translate] 跳过：未找到 LLM API Key", fg="yellow")
+        log_warn("[Translate] 跳过：未找到 LLM API Key")
         return translations
 
     for it in items:
@@ -346,6 +317,6 @@ def translate_items(
                 system_prompt=llm_cfg.get("system_prompt_translate_zh", "")
             )
         except Exception as e:
-            click.secho(f"[Translate] 失败 {sid[:18]}...: {e}", fg="red")
+            log_error(f"[Translate] 失败 {sid[:18]}...: {e}")
 
     return translations

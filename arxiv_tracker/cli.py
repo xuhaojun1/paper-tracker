@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, re, sys, traceback, time, pathlib, click, json
 from .config import Settings
+<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
 from .output import save_json, save_markdown
 from .email_template import render_email_html
 from .exporter import md_to_pdf
@@ -9,6 +10,16 @@ from .pipeline import (
     fetch_html_content, generate_summaries, translate_items,
     load_seen_ids, save_seen_ids,
 )
+=======
+from .notify.output import save_json, save_markdown
+from .notify.email_template import render_email_html
+from .pipeline import (
+    fetch_papers, augment_links, score_and_filter,
+    fetch_html_content, generate_summaries, translate_items,
+)
+from .utils.state import load_seen_ids, save_seen_ids
+from .utils.logging import setup_logging
+>>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
 
 # 进程级防重：本进程内只允许发送一次
 _SENT_EMAIL = False
@@ -95,16 +106,17 @@ def cli():
 @click.option("--verbose", is_flag=True, help="打印详细运行日志")
 @click.option("--translate", "translate_enabled", is_flag=True, default=None, help="启用 LLM 中文翻译（覆盖配置）")
 @click.option("--translate-lang", type=click.Choice(["zh"]), default=None, help="翻译目标语言")
-@click.option("--pdf", "pdf_enabled", is_flag=True, default=False, help="将 Markdown 同步导出为 PDF")
 @click.option("--site-dir", default=None, help="输出静态站点目录（如 docs）")
 @click.option("--site-url", default=None, help="站点首页 URL（用于邮件正文链接）")
 @click.option("--no-email", is_flag=True, help="跳过邮件发送（用于重试）")
 
 def run(config_path, categories, keywords, exclude_keywords, logic, max_results, sort_by, sort_order,
         lang, summary_mode, summary_scope, email_enabled, email_detail, email_max_items,
-        out_dir, verbose, translate_enabled, translate_lang, pdf_enabled, no_email: bool,
+        out_dir, verbose, translate_enabled, translate_lang, no_email: bool,
         site_dir, site_url):
     try:
+        setup_logging(verbose=verbose)
+
         if verbose:
             click.echo("[Run] Start")
 
@@ -180,10 +192,17 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
             mode=mode, lang=lang, scope=scope, verbose=verbose,
         )
         summaries_en = {}
+<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
 
         # ── 7) 翻译（中文）──
         translations = translate_items(items, raw_cfg, trans_cfg, verbose=verbose)
 
+=======
+
+        # ── 7) 翻译（中文）──
+        translations = translate_items(items, raw_cfg, trans_cfg, verbose=verbose)
+
+>>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
         # ── 8) 终端预览 ──
         if not items:
             click.echo("（本周暂无新增）")
@@ -216,7 +235,11 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
         page_url = None
         site_generated = False
         try:
+<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
             from .sitegen import generate_site
+=======
+            from .notify.sitegen import generate_site
+>>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
             site_cfg = raw_cfg.get("site") or {}
             sd = site_dir or site_cfg.get("dir")
             if sd and (site_cfg.get("enabled", False) or site_dir is not None):
@@ -240,6 +263,7 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
         except Exception as e:
             click.secho(f"[Site] 生成失败: {e}", fg="red")
 
+<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
         pdf_path = ""
         if pdf_enabled:
             try:
@@ -248,6 +272,8 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
             except Exception as e:
                 click.secho(f"[PDF] 生成失败: {e}", fg="red")
 
+=======
+>>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
         # ── 11) 邮件发送 ──
         email_sent = False
         if email_cfg.get("enabled"):
@@ -304,7 +330,7 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
                                 detail=detail, max_items=max_items,
                                 title=subject.replace("[arXiv]", "arXiv")
                             )
-                        from .mailer import send_email
+                        from .notify.mailer import send_email
                         attach = []
                         if email_cfg.get("attach_md", False) and md_path:
                             attach.append(md_path)
