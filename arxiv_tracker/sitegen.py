@@ -146,7 +146,27 @@ def _card(it: Dict[str, Any],
     _s.update(sum_zh or {})
     _s.update({k: v for k, v in (sum_en or {}).items() if v and not _s.get(k)})
 
-    parts = [f'<div class="card">', f'<div class="title">{_esc(t)}</div>']
+    # 重要度评分
+    score = it.get("importance_score")
+    reason = it.get("importance_reason") or ""
+    score_html = ""
+    if score is not None:
+        # 根据分数选择颜色
+        if score >= 8:
+            sc = "#dc2626"  # 红色 - 高重要度
+        elif score >= 6:
+            sc = "#ea580c"  # 橙色 - 中高
+        elif score >= 4:
+            sc = "#ca8a04"  # 黄色 - 中等
+        else:
+            sc = "#6b7280"  # 灰色 - 低
+        score_html = f'<span style="display:inline-block;background:{sc};color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ {score}/10</span>'
+
+    parts = [f'<div class="card">', f'<div class="title">{score_html}{_esc(t)}</div>']
+
+    # 评分理由
+    if reason:
+        parts.append(f'<div class="meta-line" style="color:{sc if score else "var(--muted)"};font-style:italic">{_esc(reason)}</div>')
 
     # 元信息分行
     parts.append(f'<div class="meta-line">Authors: {_esc(au)}</div>')

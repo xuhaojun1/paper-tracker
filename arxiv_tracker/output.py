@@ -52,7 +52,12 @@ def save_markdown(items: List[Dict[str, Any]], out_dir: str,
         venue = it.get("venue_inferred") or (it.get("journal_ref") or "")
         pub = it.get("published", "")
         upd = it.get("updated", "")
-        lines.append(f"## {i}. {title}")
+        score = it.get("importance_score")
+        reason = it.get("importance_reason") or ""
+        score_str = f" [★ {score}/10]" if score is not None else ""
+        lines.append(f"## {i}.{score_str} {title}")
+        if reason:
+            lines.append(f"- **评分理由**：{reason}")
         lines.append(f"- Authors：{au}")
         if venue:
             lines.append(f"- Venue：{venue}")

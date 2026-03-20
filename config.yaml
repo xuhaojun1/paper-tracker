@@ -13,7 +13,7 @@ keywords:
 #   - "LLM"
   
 logic: "AND"                 # 组间逻辑：categories 与 keywords 间 AND/OR
-max_results: 50
+max_results: 200
 sort_by: "lastUpdatedDate"  # 还可以是submittedDate 建议改成lastUpdatedDate按更新时间排，能捞到v2/v3的“新增”
 sort_order: "descending"
 
@@ -65,7 +65,7 @@ llm:
 # 只对选中的论文生成详细摘要和翻译，其余论文仅保留基本信息，节省 token
 filter:
   enabled: true
-  top_k: 20              # 最多保留几篇（从 max_results 中筛选）
+  top_k: 50              # 最多保留几篇（从 max_results 中打分筛选）
   # prompt: ""           # 可选自定义筛选 prompt，留空则使用默认（基于 keywords 判断相关性）
 
 # —— 中文翻译设置（用 LLM 翻译 title/summary） ——
@@ -78,12 +78,12 @@ site:
   enabled: true
   dir: "docs" 
   title: "Paper Tracker 论文速递"
-  keep_runs: 30           # 历史保留期（按页面份数，约 3 个月）
+  keep_runs: 20           # 历史保留期（按页面份数，约 5 个月）
   theme: "light"        # "light" | "dark" | "auto"
   accent: "#2563eb"     # 主题色（可自定义）
 
 freshness:
-  since_days: 3              # 只看最近 N 天内新提交/更新（与 3 天 cron 周期匹配）
+  since_days: 7              # 只看最近 N 天内新提交/更新（与一周 cron 周期匹配）
   unique_only: true       # 开启跨天去重（见过的 arXiv ID 不再重复发）
   state_path: ".state/seen.json"  # 去重状态文件（会随 docs 一起提交保存）
   fallback_when_empty: false # 当今天无新增时，是否回退展示最近的Top若干（建议false）
@@ -91,5 +91,7 @@ freshness:
 scrape:
   html: true               # 先用 HTML 页抓链接
   pdf_if_missing: true     # 若没抓到 code，再去扫 PDF 头部兜底
-  pdf_first_page: false    # （可保留为 false；若你想“不管有没有都扫 PDF”，设 true）
+  pdf_first_page: false    # （可保留为 false；若你想"不管有没有都扫 PDF"，设 true）
   timeout: 10
+  html_fulltext: true      # 抓取 arXiv HTML 全文，提取 method/experiment 等章节供 LLM 总结
+  html_fulltext_timeout: 15

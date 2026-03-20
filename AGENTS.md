@@ -20,17 +20,11 @@
 
 ### 通用
 - 代码注释和文档使用**中文**（用户母语），变量名和函数名使用**英文**
-- 保持现有代码风格：无 type hints 时保持一致，有 type hints 的模块继续使用
-- 每个文件顶部保留 `# -*- coding: utf-8 -*-`（如已有）
-- 不要删除现有注释，除非内容已过时或用户明确要求
 
 ### Python
 - 依赖管理：`requirements.txt`，添加新依赖时注明最低版本（`>=`）
 - 入口：`arxiv_tracker/cli.py`（Click CLI），`main.py` 为便捷入口
 - 配置读取：统一通过 `config.yaml` + 环境变量，环境变量优先级高于配置文件
-- LLM 调用：统一走 `arxiv_tracker/llm.py` 中的 `_chat_completions_request()`，不要引入新的 HTTP 调用方式
-- 错误处理：用 `click.secho(..., fg="red/yellow")` 输出，关键流程需 try-except 兜底
-
 
 
 ## 配置与密钥

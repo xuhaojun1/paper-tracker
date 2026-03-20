@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg?style=flat-square)](./LICENSE)
 
-**每 3 天自动检索 arXiv 论文 → LLM 双语总结 → 邮件推送 + GitHub Pages 发布。**
+**每周自动检索 arXiv 论文 → LLM 重要度打分排序 → HTML 全文深度分析 → 邮件推送 + GitHub Pages 发布。**
 
 当前追踪方向：
 - **视频生成 / 世界模型**：`video generation`, `world model`
@@ -14,24 +14,25 @@
 
 ## 功能特性
 
-- **多关键词检索**：`cs.CV / cs.LG / cs.AI` 分类 + 关键词 AND/OR 组合
-- **LLM 双语总结**：英文 + 中文一段式摘要（支持任意 OpenAI 兼容 API）
+- **大范围检索**：`cs.CV / cs.LG / cs.AI` 分类 + 关键词，每周检索 200 篇候选论文
+- **LLM 重要度打分**：每篇论文 1-10 分评分（方法创新性 40% / 领域相关性 30% / 影响力 20% / 可复现性 10%），按分数降序排列，保留 Top 50
+- **HTML 全文深度分析**：抓取 arXiv HTML 页面，提取 Method / Experiment 等章节，LLM 基于全文生成更高质量的结构化双语摘要
 - **自动提取链接**：Abs / PDF / 代码仓库 / 项目页
 - **邮件推送**：支持 QQ 邮箱 / Gmail（SMTP 465/SSL 或 587/STARTTLS）
-- **GitHub Pages**：自动生成静态站点，历史归档
-- **去重 + 新鲜度**：仅推送近 N 天且未发送过的论文
-- **GitHub Actions 定时运行**：每 3 天自动执行（可自定义 cron）
+- **GitHub Pages**：自动生成静态站点，带重要度徽章和评分理由
+- **去重 + 新鲜度**：仅推送近 7 天且未发送过的论文
+- **GitHub Actions 定时运行**：每周一自动执行（可自定义 cron）
 
 ---
 
 ## 仓库结构
 
 ```
-arxiv_tracker/        # 核心 Python 包（检索、解析、摘要、邮件、站点生成）
+arxiv_tracker/        # 核心 Python 包（检索、打分、HTML抽取、摘要、邮件、站点生成）
 docs/                 # GitHub Pages 站点输出（自动生成）
 outputs/              # 每次运行保存的 JSON/MD（自动生成）
 .state/               # 去重状态（seen.json，随仓库提交保存）
-.github/workflows/    # digest.yml — 每 3 天定时任务
+.github/workflows/    # digest.yml — 每周定时任务
 config.yaml           # 全部配置（检索/LLM/邮件/站点/去重）
 requirements.txt      # Python 依赖
 AGENTS.md             # AI agent 开发规则
@@ -67,7 +68,7 @@ Settings → **Pages** → Source: **Deploy from a branch** → Branch: `main`, 
 
 ### 4) 运行
 
-- **自动**：每 3 天 UTC 19:00（北京时间次日 03:00）自动运行
+- **自动**：每周一 UTC 19:00（北京时间周二 03:00）自动运行
 - **手动**：Actions → `paper-tracker-digest` → Run workflow（可选是否发邮件）
 
 ---
@@ -106,6 +107,8 @@ git remote set-url origin git@github.com:xuhaojun1/paper-tracker.git
 | LLM | `base_url`, `model`, `api_key_env` | 任意 OpenAI 兼容 API |
 | 邮件 | `smtp_server`, `smtp_port`, `tls` | QQ / Gmail SMTP |
 | 站点 | `dir`, `title`, `theme` | GitHub Pages 输出 |
+| 筛选 | `filter.enabled`, `filter.top_k` | LLM 重要度打分，保留 Top K |
+| HTML全文 | `scrape.html_fulltext` | 抓取论文全文供 LLM 深度分析 |
 | 新鲜度 | `since_days`, `unique_only` | 时间窗 + 去重 |
 
 ## License

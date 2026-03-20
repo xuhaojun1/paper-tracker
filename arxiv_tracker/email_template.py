@@ -71,8 +71,25 @@ def _render_card(it: Dict[str, Any],
     _s.update(sum_zh or {})
     _s.update({k: v for k, v in (sum_en or {}).items() if v and not _s.get(k)})
 
+    # 重要度评分
+    score = it.get("importance_score")
+    reason = it.get("importance_reason") or ""
+    score_badge = ""
+    if score is not None:
+        if score >= 8:
+            sc = "#dc2626"
+        elif score >= 6:
+            sc = "#ea580c"
+        elif score >= 4:
+            sc = "#ca8a04"
+        else:
+            sc = "#6b7280"
+        score_badge = f'<span style="display:inline-block;background:{sc};color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ {score}/10</span>'
+
     out = [f'<div class="card">']
-    out.append(f'<div class="title"><a href="{_esc(title_link)}">{_esc(title)}</a></div>')
+    out.append(f'<div class="title">{score_badge}<a href="{_esc(title_link)}">{_esc(title)}</a></div>')
+    if reason:
+        out.append(f'<div class="meta" style="color:{sc if score else "#667085"};font-style:italic">{_esc(reason)}</div>')
     out.append(f'<div class="meta">Authors: {_esc(authors)}</div>')
     if venue: out.append(f'<div class="meta">Venue: {_esc(venue)}</div>')
     out.append(f'<div class="meta">First: {_esc(pub)} · Latest: {_esc(upd)}</div>')

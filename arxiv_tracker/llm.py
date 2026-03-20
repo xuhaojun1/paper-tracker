@@ -148,8 +148,131 @@ def call_llm_bilingual_summary(
               "experiments_en", "experiments_zh", "limitations_en", "limitations_zh"]
     return {k: (data.get(k) or "").strip() for k in fields}
 
-# ========== LLM 预筛选：基于标题+摘要片段批量打分 ==========
+# ========== LLM 重要度打分：基于标题+摘要批量评分 ==========
 
+def call_llm_score_papers(
+    items: List[Dict[str, Any]],
+    keywords: List[str],
+    *,
+    base_url: str,
+    model: str,
+    api_key: str,
+    top_k: int = 50,
+    custom_prompt: str = "",
+    batch_size: int = 25,
+) -> List[Dict[str, Any]]:
+    """
+    批量发送论文标题+摘要给 LLM，为每篇论文打重要度分数(1-10)。
+    评分维度：
+      - 方法创新性（method novelty）
+      - 领域相关性（relevance to user interests）
+      - 影响力指标（是否被顶会接收、适用范围）
+    参数:
+        items: arXiv 条目列表
+        keywords: 用户关注的关键词列表
+        top_k: 最多保留几篇
+        custom_prompt: 用户自定义筛选 prompt（可选）
+        batch_size: 每批处理的论文数（控制 token 长度）
+    返回:
+        排好序的结果列表 [{"id": ..., "score": 1-10, "reason": "..."}]
+    """
+    if not items:
+        return []
+
+    all_scores: List[Dict[str, Any]] = []
+    kw_text = ", ".join(keywords) if keywords else "general AI research"
+
+    # 分批处理，避免单次请求 token 过长
+    for batch_start in range(0, len(items), batch_size):
+        batch = items[batch_start:batch_start + batch_size]
+        paper_list = []
+        for i, it in enumerate(batch):
+            idx = batch_start + i
+            title = (it.get("title") or "").strip()
+            abstract = (it.get("summary") or "")[:300].strip()
+            comments = (it.get("comments") or "").strip()
+            venue = it.get("venue_inferred") or (it.get("journal_ref") or "")
+            meta_parts = [f"[{idx}] title: {title}"]
+            if venue:
+                meta_parts.append(f"    venue: {venue}")
+            if comments:
+                meta_parts.append(f"    comments: {comments}")
+            meta_parts.append(f"    abstract: {abstract}")
+            paper_list.append("\n".join(meta_parts))
+
+        papers_text = "\n\n".join(paper_list)
+
+        sys_prompt = (
+            "You are a senior AI researcher evaluating paper importance for a weekly digest. "
+            "Score each paper 1-10 based on:\n"
+            "- Method novelty & contribution (weight: 40%): Is this a significant new method/framework, or just incremental application?\n"
+            "- Relevance to user interests (weight: 30%): How closely does the core contribution match the topics?\n"
+            "- Impact & generalizability (weight: 20%): Accepted at top venue? Broad applicability vs niche domain?\n"
+            "- Reproducibility (weight: 10%): Code available? Clear experimental setup?\n\n"
+            "IMPORTANT: Papers that merely APPLY existing methods to a narrow/specific domain should score LOW (1-4). "
+            "Papers with significant methodological contributions that are broadly applicable should score HIGH (7-10). "
+            "Top-venue accepted papers with major contributions get 9-10."
+        )
+
+        user_instruction = custom_prompt or (
+            f"My research interests: {kw_text}\n\n"
+        )
+
+        user_msg = (
+            f"{user_instruction}"
+            f"Papers (batch {batch_start//batch_size + 1}):\n{papers_text}\n\n"
+            f"For each paper, output a JSON array of objects:\n"
+            f'[{{"index": 0, "score": 8, "reason": "brief 1-sentence reason"}}, ...]\n'
+            f"Return ONLY the JSON array, no other text."
+        )
+
+        messages = [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": user_msg}
+        ]
+
+        try:
+            text = _chat_completions_request(
+                base_url=base_url, api_key=api_key, model=model, messages=messages,
+                temperature=0.0, max_tokens=2000, timeout=60
+            )
+
+            # 解析返回的 JSON 数组
+            m = re.search(r"\[\s*\{[\s\S]*\}\s*\]", text)
+            if m:
+                scored = json.loads(m.group(0))
+                for entry in scored:
+                    idx = entry.get("index")
+                    if isinstance(idx, int) and 0 <= idx < len(items):
+                        all_scores.append({
+                            "id": items[idx].get("id", ""),
+                            "score": min(10, max(1, int(entry.get("score", 5)))),
+                            "reason": (entry.get("reason") or "").strip(),
+                        })
+        except Exception:
+            # 此批次失败，给默认分 5
+            for it in batch:
+                all_scores.append({
+                    "id": it.get("id", ""),
+                    "score": 5,
+                    "reason": "(scoring failed for this batch)",
+                })
+
+    # 补全未打分的论文（给默认分 5）
+    scored_ids = {s["id"] for s in all_scores}
+    for it in items:
+        sid = it.get("id", "")
+        if sid and sid not in scored_ids:
+            all_scores.append({"id": sid, "score": 5, "reason": "(not scored)"})
+
+    # 按分数降序排列
+    all_scores.sort(key=lambda x: x["score"], reverse=True)
+
+    # 截取 top_k
+    return all_scores[:top_k]
+
+
+# 向后兼容旧接口（返回 ID 列表）
 def call_llm_filter_papers(
     items: List[Dict[str, Any]],
     keywords: List[str],
@@ -157,79 +280,74 @@ def call_llm_filter_papers(
     base_url: str,
     model: str,
     api_key: str,
-    top_k: int = 20,
+    top_k: int = 50,
     custom_prompt: str = "",
 ) -> List[str]:
+    """向后兼容：返回选中的 arXiv ID 列表"""
+    scored = call_llm_score_papers(
+        items=items, keywords=keywords,
+        base_url=base_url, model=model, api_key=api_key,
+        top_k=top_k, custom_prompt=custom_prompt,
+    )
+    return [s["id"] for s in scored]
+
+# ========== 基于 HTML 全文的高质量双语摘要 ==========
+
+def call_llm_rich_summary(
+    item: Dict[str, Any],
+    rich_context: str,
+    *,
+    base_url: str,
+    model: str,
+    api_key: str,
+) -> Dict[str, str]:
     """
-    批量发送论文标题+摘要片段给 LLM，返回最相关的论文 ID 列表。
-    参数:
-        items: arXiv 条目列表
-        keywords: 用户关注的关键词列表
-        top_k: 最多保留几篇
-        custom_prompt: 用户自定义筛选 prompt（可选）
-    返回:
-        选中的 arXiv ID 列表
+    基于 HTML 全文提取的富文本上下文，生成更高质量的结构化双语摘要。
+    每个字段可以比纯摘要版更充实，因为能看到 method/experiment 的具体内容。
     """
-    if not items:
-        return []
-
-    # 构造简短的论文列表（标题 + 摘要前 150 字）
-    paper_list = []
-    for i, it in enumerate(items):
-        title = (it.get("title") or "").strip()
-        abstract_short = (it.get("summary") or "")[:150].strip()
-        sid = it.get("id") or f"unknown_{i}"
-        paper_list.append(f"[{i}] id={sid}\n    title: {title}\n    abstract: {abstract_short}...")
-
-    papers_text = "\n".join(paper_list)
-    kw_text = ", ".join(keywords) if keywords else "general AI research"
-
     sys_prompt = (
-        "You are a research paper relevance judge. "
-        "Given a list of paper titles and abstract snippets, select the ones most relevant to the user's research interests. "
-        "Be selective — only keep papers that are clearly relevant."
+        "You are a concise AI research analyst. You have access to the paper's full sections (abstract, method, experiments, etc). "
+        "Extract KEY UNIQUE information for each dimension \u2014 do NOT repeat or paraphrase the same point across dimensions. "
+        "Each field: strictly 2-3 sentences, information-dense, no filler. "
+        "For method: describe the specific architecture/algorithm/technique, not just 'proposes a new method'. "
+        "For experiments: include specific benchmarks, baselines, and key quantitative results."
     )
 
-    user_instruction = custom_prompt or (
-        f"My research interests: {kw_text}\n\n"
-        "Select the papers that are MOST relevant to my interests. "
-        "A paper is relevant if its core contribution directly addresses one of my interest topics. "
-        "Papers that only tangentially mention a keyword but focus on something else should be excluded.\n\n"
-    )
-
-    user_msg = (
-        f"{user_instruction}"
-        f"Papers ({len(items)} total):\n{papers_text}\n\n"
-        f"Return ONLY a JSON array of the selected paper indices (0-based integers), e.g. [0, 2, 5].\n"
-        f"Select at most {top_k} papers. If fewer are relevant, return fewer."
+    schema_desc = (
+        '{\n'
+        '  "motivation_en": "(2-3 sentences) What specific problem/gap? Why existing methods fail?",\n'
+        '  "method_en": "(2-3 sentences) Core technique with specifics: architecture name, key components, how it works.",\n'
+        '  "experiments_en": "(2-3 sentences) Benchmarks, baselines compared, key metrics & numbers.",\n'
+        '  "limitations_en": "(1-2 sentences) Main limitation or open question.",\n'
+        '  "motivation_zh": "(motivation_en \u7684\u7b80\u4f53\u4e2d\u6587\u7ffb\u8bd1)",\n'
+        '  "method_zh": "(method_en \u7684\u7b80\u4f53\u4e2d\u6587\u7ffb\u8bd1)",\n'
+        '  "experiments_zh": "(experiments_en \u7684\u7b80\u4f53\u4e2d\u6587\u7ffb\u8bd1)",\n'
+        '  "limitations_zh": "(limitations_en \u7684\u7b80\u4f53\u4e2d\u6587\u7ffb\u8bd1)"\n'
+        '}'
     )
 
     messages = [
         {"role": "system", "content": sys_prompt},
-        {"role": "user", "content": user_msg}
+        {"role": "user", "content":
+            "Analyze this paper using the provided sections. Rules:\n"
+            "1. Write English analysis FIRST (4 fields), each 2-3 sentences MAX.\n"
+            "2. Then translate each English field to Simplified Chinese (4 _zh fields).\n"
+            "3. Each dimension must contain DIFFERENT information \u2014 zero overlap.\n"
+            "4. Be SPECIFIC: include method names, numbers, benchmark names.\n"
+            "5. No links, no bullet lists, no markdown. Plain sentences only.\n"
+            f"Return STRICT JSON:\n{schema_desc}\n\n"
+            f"PAPER CONTENT:\n{rich_context[:6000]}"
+        }
     ]
 
     text = _chat_completions_request(
         base_url=base_url, api_key=api_key, model=model, messages=messages,
-        temperature=0.0, max_tokens=200
+        temperature=0.2, max_tokens=1200, timeout=60
     )
-
-    # 解析返回的 JSON 数组
-    m = re.search(r"\[[\s\S]*?\]", text)
-    if not m:
-        # 解析失败则返回所有论文（不过滤）
-        return [it.get("id", "") for it in items]
-    try:
-        indices = json.loads(m.group(0))
-        selected_ids = []
-        for idx in indices:
-            if isinstance(idx, int) and 0 <= idx < len(items):
-                sid = items[idx].get("id", "")
-                if sid:
-                    selected_ids.append(sid)
-        return selected_ids if selected_ids else [it.get("id", "") for it in items]
-    except Exception:
-        return [it.get("id", "") for it in items]
+    data = _json_loose(text)
+    fields = ["motivation_en", "motivation_zh", "method_en", "method_zh",
+              "experiments_en", "experiments_zh", "limitations_en", "limitations_zh"]
+    return {k: (data.get(k) or "").strip() for k in fields}
 
 # ========== 两阶段摘要（保留你原有接口与行为） ==========
 
