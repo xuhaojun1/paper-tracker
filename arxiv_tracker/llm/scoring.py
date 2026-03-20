@@ -109,23 +109,3 @@ def call_llm_score_papers(
 
     # 截取 top_k
     return all_scores[:top_k]
-
-
-# 向后兼容旧接口（返回 ID 列表）
-def call_llm_filter_papers(
-    items: List[Dict[str, Any]],
-    keywords: List[str],
-    *,
-    base_url: str,
-    model: str,
-    api_key: str,
-    top_k: int = 50,
-    custom_prompt: str = "",
-) -> List[str]:
-    """向后兼容：返回选中的 arXiv ID 列表"""
-    scored = call_llm_score_papers(
-        items=items, keywords=keywords,
-        base_url=base_url, model=model, api_key=api_key,
-        top_k=top_k, custom_prompt=custom_prompt,
-    )
-    return [s["id"] for s in scored]

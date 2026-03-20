@@ -17,19 +17,29 @@ def build_scoring_messages(
 ) -> List[Dict[str, str]]:
     """构造论文打分的 messages"""
     sys_prompt = (
-        "You are a senior AI researcher evaluating paper importance for a weekly digest. "
-        "Score each paper 1-10 based on:\n"
-        "- Method novelty & contribution (weight: 40%): Is this a significant new method/framework, or just incremental application?\n"
-        "- Relevance to user interests (weight: 30%): How closely does the core contribution match the topics?\n"
-        "- Impact & generalizability (weight: 20%): Accepted at top venue? Broad applicability vs niche domain?\n"
-        "- Reproducibility (weight: 10%): Code available? Clear experimental setup?\n\n"
-        "IMPORTANT: Papers that merely APPLY existing methods to a narrow/specific domain should score LOW (1-4). "
-        "Papers with significant methodological contributions that are broadly applicable should score HIGH (7-10). "
-        "Top-venue accepted papers with major contributions get 9-10."
+        "You are a senior AI researcher screening papers for a weekly digest.\n"
+        "The reader's core research directions are:\n"
+        "  1) Video Generation & World Models — novel architectures, training paradigms, "
+        "temporal consistency, physics-aware generation, interactive world simulation.\n"
+        "  2) Vision-Language-Action (VLA) — models that jointly reason over vision, language, "
+        "and robotic/embodied actions; multi-modal policy learning; sim-to-real.\n"
+        "  3) 3D Reconstruction — neural 3D representations (NeRF, 3D Gaussian Splatting, VGGT), "
+        "novel-view synthesis, large-scale scene reconstruction.\n\n"
+        "Score each paper 1-10:\n"
+        "- Relevance (40%): Does the paper's CORE contribution directly advance one of the 3 directions above? "
+        "Merely mentioning a keyword in the abstract without substantial contribution to that direction → low relevance.\n"
+        "- Novelty (30%): New architecture / framework / paradigm vs incremental or application-only work.\n"
+        "- Impact (20%): Top-venue acceptance, broad applicability, strong quantitative gains.\n"
+        "- Reproducibility (10%): Code released, clear setup.\n\n"
+        "Scoring guide:\n"
+        "  9-10: Directly advances a core direction with a major, novel contribution (e.g. new SOTA framework).\n"
+        "  7-8: Solid contribution closely related to a core direction.\n"
+        "  5-6: Tangentially related or moderate contribution.\n"
+        "  1-4: Off-topic, purely application-level, or only superficially mentions keywords."
     )
 
     user_instruction = custom_prompt or (
-        f"My research interests: {kw_text}\n\n"
+        f"User keywords for reference: {kw_text}\n\n"
     )
 
     user_msg = (
@@ -131,37 +141,6 @@ def build_rich_summary_messages(
         {"role": "system", "content": sys_prompt},
         {"role": "user", "content": user_msg},
     ]
-
-
-# ========== 两阶段摘要 prompt（旧接口兼容）==========
-
-def build_two_stage_prompt(item: Dict[str, Any], lang: str = "zh", scope: str = "both") -> str:
-    """构造两阶段摘要的 user prompt"""
-    title = item.get("title") or ""
-    authors = ", ".join(item.get("authors") or [])
-    venue = item.get("venue_inferred") or (item.get("journal_ref") or "")
-    comments = item.get("comments") or ""
-    summary = item.get("summary") or ""
-    links = {
-        "html": item.get("html_url"),
-        "pdf": item.get("pdf_url"),
-        "code": item.get("code_urls") or [],
-        "project": item.get("project_urls") or [],
-        "other": item.get("other_urls") or [],
-    }
-    meta = {
-        "title": title, "authors": authors, "venue": venue,
-        "comments": comments, "summary": summary, "links": links
-    }
-    ask_lang = "中文" if lang == "zh" else "English"
-    return (
-        f"请阅读以下论文元信息(JSON)，用{ask_lang}输出\"两阶段摘要\"：\n"
-        f"1) TL;DR（1~2 句，先总后分，避免口号）\n"
-        f"2) **Method Card**：任务/动机、核心方法、关键设计、数据与指标、主要结果与结论、局限与未来工作、保留链接（PDF/代码/项目页）\n"
-        f"3) **Discussion Questions**：3~5 个高质量问题（可用于组会讨论）\n"
-        f"请保留所有给定链接，不要臆造。scope=\"{scope}\" 表示输出范围（tldr/full/both）。\n\n"
-        f"JSON:\n{json.dumps(meta, ensure_ascii=False, indent=2)}"
-    )
 
 
 # ========== 翻译 prompt ==========

@@ -17,6 +17,13 @@
 - 删除重构后遗留的 14 个旧扁平文件（`client.py`、`llm.py`、`summarizer.py`、`scheduler.py`、`exporter.py` 等），它们已被 `search/`、`llm/`、`notify/`、`utils/` 子包替代
 - 将 `mailer.py` 移入 `notify/` 子包（修复 `notify/__init__.py` 导入缺失）
 
+**Refactored**
+- `llm/prompts.py`：重写打分 prompt，明确描述三大研究方向（视频生成/世界模型、VLA、3D重建），按方向语义评分而非简单关键词匹配；删除旧 `build_two_stage_prompt`
+- `llm/summary.py`：删除旧兼容函数 `call_llm_two_stage`（含 TL;DR 解析逻辑）；`build_two_stage_summary` 精简为 `build_summary`，移除冗余的 `tldr`/`full_md` 旧字段
+- `llm/scoring.py`：删除旧兼容函数 `call_llm_filter_papers`
+- `llm/__init__.py`：导出列表精简，移除 4 个已删除函数
+- `pipeline.py`：`generate_summaries` 移除不再需要的 `lang`/`scope` 参数
+
 **Changed**
 - `digest.yml`：移除已废弃的 Cairo 系统依赖安装和 pycairo 构建工具步骤（PDF 导出功能已在 v0.3.0 移除）
 - `requirements.txt`：移除 `schedule`（本地调度已删除）和 `xhtml2pdf`（PDF 导出已删除）

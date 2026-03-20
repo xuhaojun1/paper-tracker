@@ -13,7 +13,7 @@ from typing import Dict, List, Any, Optional, Set, Tuple
 
 from .search import build_search_query, fetch_arxiv_feed, parse_feed, get_rich_context
 from .search.scraper import augment_item_links
-from .llm import call_llm_translate, call_llm_score_papers, call_llm_rich_summary, build_two_stage_summary
+from .llm import call_llm_translate, call_llm_score_papers, call_llm_rich_summary, build_summary
 from .utils.logging import log_info, log_warn, log_error, log_debug
 from .utils.state import load_seen_ids, save_seen_ids
 
@@ -232,8 +232,6 @@ def generate_summaries(
     rich_contexts: Dict[str, str],
     raw_cfg: Dict[str, Any],
     mode: str = "llm",
-    lang: str = "both",
-    scope: str = "both",
     verbose: bool = False,
 ) -> Dict[str, Dict[str, str]]:
     """
@@ -265,22 +263,16 @@ def generate_summaries(
                         log_debug(f"[Summary] {i+1}/{len(items)} (rich) {title_short}...")
                 else:
                     # 回退到纯 abstract 版本
-                    data = build_two_stage_summary(
-                        item=it, mode=mode, lang=lang, scope=scope, llm_cfg=llm_cfg
-                    )
+                    data = build_summary(item=it, mode=mode, llm_cfg=llm_cfg)
                     if verbose:
                         log_debug(f"[Summary] {i+1}/{len(items)} (abstract) {title_short}...")
 
                 summaries[sid] = data
             except Exception as e:
                 log_warn(f"[Summary] 失败 {sid[:18]}...: {e}")
-                summaries[sid] = build_two_stage_summary(
-                    item=it, mode="heuristic", lang=lang, scope=scope
-                )
+                summaries[sid] = build_summary(item=it, mode="heuristic")
         else:
-            summaries[sid] = build_two_stage_summary(
-                item=it, mode=mode, lang=lang, scope=scope, llm_cfg=llm_cfg
-            )
+            summaries[sid] = build_summary(item=it, mode=mode, llm_cfg=llm_cfg)
 
     return summaries
 

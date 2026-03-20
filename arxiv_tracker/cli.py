@@ -178,7 +178,7 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
         # ── 6) 生成结构化摘要（优先使用 HTML 全文）──
         summaries_zh = generate_summaries(
             items, rich_contexts, raw_cfg,
-            mode=mode, lang=lang, scope=scope, verbose=verbose,
+            mode=mode, verbose=verbose,
         )
         summaries_en = {}
 
