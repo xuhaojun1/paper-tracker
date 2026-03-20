@@ -4,6 +4,27 @@
 
 ---
 
+## [0.3.1] - 2026-03-20
+
+### 清理合并冲突 & 本地定时运行支持
+
+**Added**
+- `run_local.sh`：本地 tmux 定时运行脚本，支持自定义间隔/时间/邮件开关，自动加载 `.env`、激活 venv、运行后 git commit + push
+- `.env.example`：环境变量模板文件
+
+**Fixed**
+- 清理 `CHANGELOG.md` / `README.md` / `cli.py` 中残留的合并冲突标记（`<<<<<<<` / `>>>>>>>` ）
+- 删除重构后遗留的 14 个旧扁平文件（`client.py`、`llm.py`、`summarizer.py`、`scheduler.py`、`exporter.py` 等），它们已被 `search/`、`llm/`、`notify/`、`utils/` 子包替代
+- 将 `mailer.py` 移入 `notify/` 子包（修复 `notify/__init__.py` 导入缺失）
+
+**Changed**
+- `digest.yml`：移除已废弃的 Cairo 系统依赖安装和 pycairo 构建工具步骤（PDF 导出功能已在 v0.3.0 移除）
+- `requirements.txt`：移除 `schedule`（本地调度已删除）和 `xhtml2pdf`（PDF 导出已删除）
+- `AGENTS.md`：修正 cron 描述为实际的每周一 `0 19 * * 1`；更新项目概述
+- `README.md`：修复仓库结构描述；新增「服务器 tmux 定时运行」文档
+
+---
+
 ## [0.3.0] - 2026-07-14
 
 ### 项目架构重构 & LLM 重要度打分 & 纯中文输出

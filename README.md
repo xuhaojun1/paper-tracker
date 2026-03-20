@@ -113,6 +113,37 @@ python -m arxiv_tracker.cli run --config config.yaml --no-email --verbose
 python -m arxiv_tracker.cli run --config config.yaml --site-dir docs --verbose
 ```
 
+### 服务器 tmux 定时运行
+
+适合在自己的服务器上长期运行，每周自动执行一次：
+
+```bash
+# 1) 配置环境变量
+cp .env.example .env
+vim .env                          # 填入 API Key、邮箱、SMTP 密码
+
+# 2) 启动 tmux 会话
+tmux new -s paper-tracker
+
+# 3) 运行定时脚本（默认每 7 天凌晨 3 点执行）
+bash run_local.sh
+
+# 4) 脱离 tmux（脚本后台继续运行）
+# 按 Ctrl+B 然后按 D
+
+# 重新连接：tmux attach -t paper-tracker
+```
+
+可通过环境变量自定义行为：
+
+```bash
+# 立即运行一次 + 之后每 7 天运行
+RUN_NOW=true bash run_local.sh
+
+# 不发邮件、每 3 天运行
+SEND_EMAIL=false INTERVAL_DAYS=3 bash run_local.sh
+```
+
 ---
 
 ## git连接配置

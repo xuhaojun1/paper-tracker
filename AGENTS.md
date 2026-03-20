@@ -6,7 +6,7 @@
 
 ## 项目概述
 
-**Paper Tracker** 是一个基于 GitHub Actions 的 arXiv 论文自动追踪系统。每 3 天自动检索指定方向的最新论文，通过 LLM 生成双语摘要，并通过邮件和 GitHub Pages 推送。
+**Paper Tracker** 是一个基于 GitHub Actions 的 arXiv 论文自动追踪系统。每周自动检索指定方向的最新论文，通过 LLM 重要度打分 + 结构化摘要，并通过邮件和 GitHub Pages 推送。支持本地 tmux 定时运行。
 
 - **仓库**：`xuhaojun1/paper-tracker`
 - **语言**：Python 3.10+
@@ -69,7 +69,7 @@
 
 ### 工作流文件
 - 唯一工作流：`.github/workflows/digest.yml`
-- cron: `0 19 */3 * *`（每 3 天 UTC 19:00 = 北京时间次日 03:00）
+- cron: `0 19 * * 1`（每周一 UTC 19:00 = 北京时间周二 03:00）
 - 支持 `workflow_dispatch` 手动触发（带发邮件开关）
 
 ### 修改注意
@@ -84,6 +84,7 @@
 - 本地测试：`python -m arxiv_tracker.cli run --config config.yaml --no-email --verbose`
 - LLM 测试：确保 `OPENAI_COMPAT_API_KEY` 环境变量已设置
 - 邮件测试：手动触发 Actions 并设 `send_email: true`
+- 环境在./.venv中
 
 ---
 
