@@ -1,0 +1,157 @@
+[
+  {
+    "id": "http://arxiv.org/abs/2603.16711v2",
+    "title": "Search2Motion: Training-Free Object-Level Motion Control via Attention-Consensus Search",
+    "authors": [
+      "Sainan Liu",
+      "Tz-Ying Wu",
+      "Hector A Valdez",
+      "Subarna Tripathi"
+    ],
+    "primary_category": null,
+    "categories": [
+      "cs.CV"
+    ],
+    "published": "2026-03-17T16:02:38+00:00",
+    "updated": "2026-03-18T17:58:04+00:00",
+    "comments": "14 pages, 9 figures",
+    "journal_ref": null,
+    "venue_inferred": null,
+    "summary": "We present Search2Motion, a training-free framework for object-level motion editing in image-to-video generation. Unlike prior methods requiring trajectories, bounding boxes, masks, or motion fields, Search2Motion adopts target-frame-based control, leveraging first-last-frame motion priors to realize object relocation while preserving scene stability without fine-tuning. Reliable target-frame construction is achieved through semantic-guided object insertion and robust background inpainting. We further show that early-step self-attention maps predict object and camera dynamics, offering interpretable user feedback and motivating ACE-Seed (Attention Consensus for Early-step Seed selection), a lightweight search strategy that improves motion fidelity without look-ahead sampling or external evaluators. Noting that existing benchmarks conflate object and camera motion, we introduce S2M-DAVIS and S2M-OMB for stable-camera, object-only evaluation, alongside FLF2V-obj metrics that isolate object artifacts without requiring ground-truth trajectories. Search2Motion consistently outperforms baselines on FLF2V-obj and VBench.",
+    "html_url": "https://arxiv.org/abs/2603.16711v2",
+    "pdf_url": "https://arxiv.org/pdf/2603.16711v2",
+    "code_urls": [
+      "https://huggingface.co/huggingface",
+      "https://huggingface.co/docs/hub/spaces"
+    ],
+    "project_urls": [],
+    "other_urls": []
+  },
+  {
+    "id": "http://arxiv.org/abs/2603.17998v1",
+    "title": "The Unreasonable Effectiveness of Text Embedding Interpolation for Continuous Image Steering",
+    "authors": [
+      "Yigit Ekin",
+      "Yossi Gandelsman"
+    ],
+    "primary_category": null,
+    "categories": [
+      "cs.CV"
+    ],
+    "published": "2026-03-18T17:57:53+00:00",
+    "updated": "2026-03-18T17:57:53+00:00",
+    "comments": "Project Page: https://yigitekin.github.io/diffusion-sliders",
+    "journal_ref": null,
+    "venue_inferred": null,
+    "summary": "We present a training-free framework for continuous and controllable image editing at test time for text-conditioned generative models. In contrast to prior approaches that rely on additional training or manual user intervention, we find that a simple steering in the text-embedding space is sufficient to produce smooth edit control. Given a target concept (e.g., enhancing photorealism or changing facial expression), we use a large language model to automatically construct a small set of debiased contrastive prompt pairs, from which we compute a steering vector in the generator's text-encoder space. We then add this vector directly to the input prompt representation to control generation along the desired semantic axis. To obtain a continuous control, we propose an elastic range search procedure that automatically identifies an effective interval of steering magnitudes, avoiding both under-steering (no-edit) and over-steering (changing other attributes). Adding the scaled versions of the same vector within this interval yields smooth and continuous edits. Since our method modifies only textual representations, it naturally generalizes across text-conditioned modalities, including image and video generation. To quantify the steering continuity, we introduce a new evaluation metric that measures the uniformity of semantic change across edit strengths. We compare the continuous editing behavior across methods and find that, despite its simplicity and lightweight design, our approach is comparable to training-based alternatives, outperforming other training-free methods.",
+    "html_url": "https://arxiv.org/abs/2603.17998v1",
+    "pdf_url": "https://arxiv.org/pdf/2603.17998v1",
+    "code_urls": [
+      "https://huggingface.co/huggingface",
+      "https://huggingface.co/docs/hub/spaces"
+    ],
+    "project_urls": [
+      "https://yigitekin.github.io/diffusion-sliders"
+    ],
+    "other_urls": []
+  },
+  {
+    "id": "http://arxiv.org/abs/2603.17989v1",
+    "title": "Versatile Editing of Video Content, Actions, and Dynamics without Training",
+    "authors": [
+      "Vladimir Kulikov",
+      "Roni Paiss",
+      "Andrey Voynov",
+      "Inbar Mosseri",
+      "Tali Dekel",
+      "Tomer Michaeli"
+    ],
+    "primary_category": null,
+    "categories": [
+      "cs.CV"
+    ],
+    "published": "2026-03-18T17:50:56+00:00",
+    "updated": "2026-03-18T17:50:56+00:00",
+    "comments": "Project page at https://dynaedit.github.io/",
+    "journal_ref": null,
+    "venue_inferred": null,
+    "summary": "Controlled video generation has seen drastic improvements in recent years. However, editing actions and dynamic events, or inserting contents that should affect the behaviors of other objects in real-world videos, remains a major challenge. Existing trained models struggle with complex edits, likely due to the difficulty of collecting relevant training data. Similarly, existing training-free methods are inherently restricted to structure- and motion-preserving edits and do not support modification of motion or interactions. Here, we introduce DynaEdit, a training-free editing method that unlocks versatile video editing capabilities with pretrained text-to-video flow models. Our method relies on the recently introduced inversion-free approach, which does not intervene in the model internals, and is thus model-agnostic. We show that naively attempting to adapt this approach to general unconstrained editing results in severe low-frequency misalignment and high-frequency jitter. We explain the sources for these phenomena and introduce novel mechanisms for overcoming them. Through extensive experiments, we show that DynaEdit achieves state-of-the-art results on complex text-based video editing tasks, including modifying actions, inserting objects that interact with the scene, and introducing global effects.",
+    "html_url": "https://arxiv.org/abs/2603.17989v1",
+    "pdf_url": "https://arxiv.org/pdf/2603.17989v1",
+    "code_urls": [
+      "https://huggingface.co/huggingface",
+      "https://huggingface.co/docs/hub/spaces"
+    ],
+    "project_urls": [
+      "https://dynaedit.github.io/"
+    ],
+    "other_urls": []
+  },
+  {
+    "id": "http://arxiv.org/abs/2603.17975v1",
+    "title": "AHOY! Animatable Humans under Occlusion from YouTube Videos with Gaussian Splatting and Video Diffusion Priors",
+    "authors": [
+      "Aymen Mir",
+      "Riza Alp Guler",
+      "Xiangjun Tang",
+      "Peter Wonka",
+      "Gerard Pons-Moll"
+    ],
+    "primary_category": null,
+    "categories": [
+      "cs.CV"
+    ],
+    "published": "2026-03-18T17:39:05+00:00",
+    "updated": "2026-03-18T17:39:05+00:00",
+    "comments": "Our project page is available at https://miraymen.github.io/ahoy/",
+    "journal_ref": null,
+    "venue_inferred": null,
+    "summary": "We present AHOY, a method for reconstructing complete, animatable 3D Gaussian avatars from in-the-wild monocular video despite heavy occlusion. Existing methods assume unoccluded input-a fully visible subject, often in a canonical pose-excluding the vast majority of real-world footage where people are routinely occluded by furniture, objects, or other people. Reconstructing from such footage poses fundamental challenges: large body regions may never be observed, and multi-view supervision per pose is unavailable. We address these challenges with four contributions: (i) a hallucination-as-supervision pipeline that uses identity-finetuned diffusion models to generate dense supervision for previously unobserved body regions; (ii) a two-stage canonical-to-pose-dependent architecture that bootstraps from sparse observations to full pose-dependent Gaussian maps; (iii) a map-pose/LBS-pose decoupling that absorbs multi-view inconsistencies from the generated data; (iv) a head/body split supervision strategy that preserves facial identity. We evaluate on YouTube videos and on multi-view capture data with significant occlusion and demonstrate state-of-the-art reconstruction quality. We also demonstrate that the resulting avatars are robust enough to be animated with novel poses and composited into 3DGS scenes captured using cell-phone video. Our project page is available at https://miraymen.github.io/ahoy/",
+    "html_url": "https://arxiv.org/abs/2603.17975v1",
+    "pdf_url": "https://arxiv.org/pdf/2603.17975v1",
+    "code_urls": [
+      "https://huggingface.co/huggingface",
+      "https://huggingface.co/docs/hub/spaces"
+    ],
+    "project_urls": [
+      "https://miraymen.github.io/ahoy/"
+    ],
+    "other_urls": []
+  },
+  {
+    "id": "http://arxiv.org/abs/2505.22977v2",
+    "title": "HyperMotionX: The Dataset and Benchmark with DiT-Based Pose-Guided Human Image Animation of Complex Motions",
+    "authors": [
+      "Shuolin Xu",
+      "Siming Zheng",
+      "Ziyi Wang",
+      "HC Yu",
+      "Jinwei Chen",
+      "Huaqi Zhang",
+      "Daquan Zhou",
+      "Tong-Yee Lee",
+      "Bo Li",
+      "Peng-Tao Jiang"
+    ],
+    "primary_category": null,
+    "categories": [
+      "cs.CV"
+    ],
+    "published": "2025-05-29T01:30:46+00:00",
+    "updated": "2026-03-18T17:20:31+00:00",
+    "comments": "17 pages, 7 figures",
+    "journal_ref": null,
+    "venue_inferred": null,
+    "summary": "Recent advances in diffusion models have significantly improved conditional video generation, particularly in the pose-guided human image animation task. Although existing methods are capable of generating high-fidelity and time-consistent animation sequences in regular motions and static scenes. However there are still obvious limitations when facing complex human body motions that contain highly dynamic, non-standard motions, and the lack of a high-quality benchmark for evaluation of complex human motion animations. To address this challenge, we propose a concise yet powerful DiT-based human animation generation baseline and design spatial low-frequency enhanced RoPE, a novel module that selectively enhances low-frequency spatial feature modeling by introducing learnable frequency scaling. Furthermore, we introduce the Open-HyperMotionX Dataset and HyperMotionX Bench, which provide high-quality human pose annotations and curated video clips for evaluating and improving pose-guided human image animation models under complex human motion conditions. Our method significantly improves structural stability and appearance consistency in highly dynamic human motion sequences. Extensive experiments demonstrate the effectiveness of our dataset and proposed approach in advancing the generation quality of complex human motion image animations. The codes, model weights, and dataset have been made publicly available at https://vivocameraresearch.github.io/hypermotion/",
+    "html_url": "https://arxiv.org/abs/2505.22977v2",
+    "pdf_url": "https://arxiv.org/pdf/2505.22977v2",
+    "code_urls": [
+      "https://huggingface.co/huggingface",
+      "https://huggingface.co/docs/hub/spaces"
+    ],
+    "project_urls": [
+      "https://vivocameraresearch.github.io/hypermotion/"
+    ],
+    "other_urls": []
+  }
+]
