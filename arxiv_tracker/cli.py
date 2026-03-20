@@ -1,16 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, re, sys, traceback, time, pathlib, click, json
 from .config import Settings
-<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
-from .output import save_json, save_markdown
-from .email_template import render_email_html
-from .exporter import md_to_pdf
-from .pipeline import (
-    fetch_papers, augment_links, score_and_filter,
-    fetch_html_content, generate_summaries, translate_items,
-    load_seen_ids, save_seen_ids,
-)
-=======
 from .notify.output import save_json, save_markdown
 from .notify.email_template import render_email_html
 from .pipeline import (
@@ -19,7 +9,6 @@ from .pipeline import (
 )
 from .utils.state import load_seen_ids, save_seen_ids
 from .utils.logging import setup_logging
->>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
 
 # 进程级防重：本进程内只允许发送一次
 _SENT_EMAIL = False
@@ -192,17 +181,10 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
             mode=mode, lang=lang, scope=scope, verbose=verbose,
         )
         summaries_en = {}
-<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
 
         # ── 7) 翻译（中文）──
         translations = translate_items(items, raw_cfg, trans_cfg, verbose=verbose)
 
-=======
-
-        # ── 7) 翻译（中文）──
-        translations = translate_items(items, raw_cfg, trans_cfg, verbose=verbose)
-
->>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
         # ── 8) 终端预览 ──
         if not items:
             click.echo("（本周暂无新增）")
@@ -235,11 +217,7 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
         page_url = None
         site_generated = False
         try:
-<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
-            from .sitegen import generate_site
-=======
             from .notify.sitegen import generate_site
->>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
             site_cfg = raw_cfg.get("site") or {}
             sd = site_dir or site_cfg.get("dir")
             if sd and (site_cfg.get("enabled", False) or site_dir is not None):
@@ -263,17 +241,6 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
         except Exception as e:
             click.secho(f"[Site] 生成失败: {e}", fg="red")
 
-<<<<<<< /data/xhj/Arxiv-tracker/arxiv_tracker/cli.py
-        pdf_path = ""
-        if pdf_enabled:
-            try:
-                pdf_path = md_to_pdf(md_path)
-                click.echo(f"Saved: {pdf_path}")
-            except Exception as e:
-                click.secho(f"[PDF] 生成失败: {e}", fg="red")
-
-=======
->>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/arxiv_tracker/cli.py
         # ── 11) 邮件发送 ──
         email_sent = False
         if email_cfg.get("enabled"):

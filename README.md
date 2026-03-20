@@ -28,17 +28,6 @@
 ## 仓库结构
 
 ```
-<<<<<<< /data/xhj/Arxiv-tracker/README.md
-arxiv_tracker/        # 核心 Python 包（检索、打分、HTML抽取、摘要、邮件、站点生成）
-docs/                 # GitHub Pages 站点输出（自动生成）
-outputs/              # 每次运行保存的 JSON/MD（自动生成）
-.state/               # 去重状态（seen.json，随仓库提交保存）
-.github/workflows/    # digest.yml — 每周定时任务
-config.yaml           # 全部配置（检索/LLM/邮件/站点/去重）
-requirements.txt      # Python 依赖
-AGENTS.md             # AI agent 开发规则
-CHANGELOG.md          # 版本记录
-=======
 arxiv_tracker/            # 核心 Python 包
 ├── cli.py                # CLI 入口，参数解析与调度
 ├── pipeline.py           # 核心工作流管线（搜索→打分→全文→摘要→翻译）
@@ -60,8 +49,7 @@ arxiv_tracker/            # 核心 Python 包
 │   ├── mailer.py         #   SMTP 邮件发送
 │   ├── email_template.py #   邮件 HTML 模板
 │   ├── sitegen.py        #   GitHub Pages 静态站点生成
-│   ├── output.py         #   JSON/MD 文件输出
-│   └── exporter.py       #   MD → PDF 导出
+│   └── output.py         #   JSON/MD 文件输出
 └── utils/                # 通用工具
     ├── state.py          #   去重状态管理
     └── logging.py        #   统一日志
@@ -72,7 +60,6 @@ outputs/                  # 每次运行保存的 JSON/MD（自动生成）
 .github/workflows/        # digest.yml — 每周定时任务
 config.yaml               # 全部配置（检索/LLM/邮件/站点/去重）
 requirements.txt          # Python 依赖
->>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/README.md
 ```
 
 ---

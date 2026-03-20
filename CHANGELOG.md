@@ -6,30 +6,6 @@
 
 ## [0.3.0] - 2026-07-14
 
-<<<<<<< /data/xhj/Arxiv-tracker/CHANGELOG.md
-### LLM 重要度打分 & HTML 全文深度分析 & 架构重构
-
-**Added**
-- `html_fetcher.py`：新增 arXiv HTML 全文抓取模块，自动提取 Abstract / Introduction / Method / Experiment / Conclusion 等关键章节
-- `pipeline.py`：新增工作流管线模块，将核心逻辑从 `cli.py` 拆分为独立的阶段函数（`fetch_papers` → `augment_links` → `score_and_filter` → `fetch_html_content` → `generate_summaries` → `translate_items`）
-- `llm.py`：新增 `call_llm_score_papers()` — LLM 重要度打分（1-10 分），评分维度：方法创新性 40% / 领域相关性 30% / 影响力与泛化性 20% / 可复现性 10%；分批处理避免 token 溢出；返回分数 + 评分理由
-- `llm.py`：新增 `call_llm_rich_summary()` — 基于 HTML 全文章节的高质量结构化双语摘要（比纯 abstract 版本更具体，包含方法细节、benchmark 数据等）
-- `config.yaml`：新增 `scrape.html_fulltext` / `scrape.html_fulltext_timeout` 配置项，控制 HTML 全文抓取
-- `sitegen.py` / `email_template.py` / `output.py`：论文卡片新增重要度评分徽章（颜色按分数区分：红/橙/黄/灰）和评分理由展示
-
-**Changed**
-- `cli.py`：重构为轻量级调度层，核心工作流逻辑移至 `pipeline.py`（cli.py 行数从 537 → ~350）
-- `llm.py`：原 `call_llm_filter_papers()` 改为基于 `call_llm_score_papers()` 的兼容包装，不再使用二值筛选
-- `config.yaml`：`max_results` 从 50 → 200（扩大搜索范围）
-- `config.yaml`：`filter.top_k` 从 20 → 50（打分后保留 50 篇最重要论文）
-- `config.yaml`：`freshness.since_days` 从 3 → 7（匹配一周运行周期）
-- `digest.yml`：cron 从 `*/3 天` 改为**每周一** UTC 19:00（`0 19 * * 1`）
-- `README.md`：更新功能描述、仓库结构、配置说明，反映新的打分和全文分析功能
-
-**工作流变更**
-- 旧流程：关键词搜索 50 篇 → LLM 二值筛选 20 篇 → 纯 abstract 摘要
-- 新流程：关键词搜索 200 篇 → LLM 打分排序保留 50 篇 → 抓取 HTML 全文 → 基于全文的深度摘要
-=======
 ### 项目架构重构 & LLM 重要度打分 & 纯中文输出
 
 **架构重构**
@@ -61,7 +37,6 @@
 **工作流变更**
 - 旧流程：搜索 50 篇 → LLM 二值筛选 20 篇 → 英中双语摘要
 - 新流程：搜索 200 篇 → LLM 打分排序保留 50 篇 → 抓取 HTML 全文 → 纯中文深度摘要
->>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/CHANGELOG.md
 
 ---
 
@@ -141,25 +116,6 @@
 
 目前文件结构：
 arxiv_tracker/
-<<<<<<< /data/xhj/Arxiv-tracker/CHANGELOG.md
-├── cli.py              # CLI 入口，参数解析与调度
-├── pipeline.py         # 核心工作流管线（搜索→打分→全文→摘要→翻译）
-├── html_fetcher.py     # arXiv HTML 全文抓取与章节提取
-├── client.py           # arXiv API HTTP 请求
-├── config.py           # Settings 数据类
-├── query.py            # 搜索查询字符串构造
-├── parser.py           # Feed XML 解析
-├── llm.py              # LLM 调用（打分/摘要/翻译，统一 OpenAI 兼容通道）
-├── summarizer.py       # 摘要生成策略（LLM / heuristic）
-├── mailer.py           # SMTP 邮件发送
-├── email_template.py   # 邮件 HTML 模板渲染
-├── sitegen.py          # GitHub Pages 静态站点生成
-├── output.py           # JSON/MD 文件输出
-├── exporter.py         # MD → PDF 导出
-├── extractors.py       # 链接提取（摘要/comments 中的 URL）
-├── extrascrape.py      # 代码链接补全（HTML 页 + PDF 首页兜底）
-└── scheduler.py        # 本地定时调度（非 Actions 场景）
-=======
 ├── cli.py                # CLI 入口，参数解析与调度
 ├── pipeline.py           # 核心工作流管线（搜索→打分→全文→摘要→翻译）
 ├── config.py             # Settings 数据类 + YAML 加载
@@ -184,4 +140,3 @@ arxiv_tracker/
 └── utils/                # 通用工具
     ├── state.py          #   去重状态管理
     └── logging.py        #   统一日志
->>>>>>> /root/.windsurf/worktrees/Arxiv-tracker/Arxiv-tracker-cc677de3/CHANGELOG.md
