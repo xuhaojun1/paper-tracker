@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square&logo=python)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg?style=flat-square)](./LICENSE)
 
-**每周自动检索 arXiv 论文 → LLM 重要度打分排序 → HTML 全文深度分析 → 邮件推送 + GitHub Pages 发布。**
+**每周从 HuggingFace 社区热门论文中筛选 → 本地关键词+热度打分 → arXiv 元数据补全 → LLM 精排 → HTML 全文深度分析 → 邮件推送 + GitHub Pages 发布。**
 
 当前追踪方向：
 - **视频生成 / 世界模型**：`video generation`, `world model`
@@ -14,10 +14,12 @@
 
 ## 功能特性
 
-- **大范围检索**：`cs.CV / cs.LG / cs.AI` 分类 + 关键词，每周检索 200 篇候选论文
-- **LLM 重要度打分**：每篇论文 1-10 分评分（方法创新性 40% / 领域相关性 30% / 影响力 20% / 可复现性 10%），按分数降序排列，保留 Top 50
-- **HTML 全文深度分析**：抓取 arXiv HTML 页面，提取 Method / Experiment 等章节，LLM 基于全文生成更高质量的结构化双语摘要
-- **自动提取链接**：Abs / PDF / 代码仓库 / 项目页
+- **HuggingFace 社区热门**：从 HF Daily Papers 抓取社区投票 + 热度最高的论文，比 arXiv 关键词搜索更高效
+- **本地关键词快筛**：按 config 中配置的关键词对标题/摘要/AI 关键词匹配打分，结合 HF upvotes + GitHub stars 加权，保留 Top 30
+- **arXiv 元数据补全**：多线程并发请求 arXiv API，补全作者、机构、分类、venue 等信息
+- **LLM 重要度精排**：每篇论文 1-10 分评分（方法创新性 / 领域相关性 / 影响力 / 可复现性），按分数降序排列
+- **HTML 全文深度分析**：抓取 arXiv HTML 页面，提取 Method / Experiment 等章节，LLM 基于全文生成结构化中文摘要
+- **自动提取链接**：Abs / PDF / 代码仓库 / 项目页（HF 源自带 GitHub repo + stars）
 - **邮件推送**：支持 QQ 邮箱 / Gmail（SMTP 465/SSL 或 587/STARTTLS）
 - **GitHub Pages**：自动生成静态站点，带重要度徽章和评分理由
 - **去重 + 新鲜度**：仅推送近 7 天且未发送过的论文
@@ -30,10 +32,11 @@
 ```
 arxiv_tracker/            # 核心 Python 包
 ├── cli.py                # CLI 入口，参数解析与调度
-├── pipeline.py           # 核心工作流管线（搜索→打分→全文→摘要→翻译）
+├── pipeline.py           # 核心工作流管线（HF抓取→打分→元数据补全→补链→LLM打分→全文→摘要→翻译）
 ├── config.py             # Settings 数据类 + YAML 加载
 ├── search/               # 论文搜索与获取
-│   ├── query.py          #   arXiv 查询字符串构造
+│   ├── hf_client.py      #   HuggingFace Daily Papers 抓取 + 关键词打分 + arXiv 元数据补全
+│   ├── query.py          #   arXiv 查询字符串构造（备用）
 │   ├── client.py         #   arXiv API HTTP 请求 + 重试
 │   ├── parser.py         #   Feed XML 解析
 │   ├── scraper.py        #   代码链接补全（HTML页 + PDF兜底）
@@ -43,7 +46,7 @@ arxiv_tracker/            # 核心 Python 包
 │   ├── api_client.py     #   OpenAI 兼容 HTTP 客户端
 │   ├── prompts.py        #   所有 prompt 模板（打分/摘要/翻译）
 │   ├── scoring.py        #   论文重要度打分
-│   ├── summary.py        #   摘要生成（双语结构化 + 全文版 + 启发式兜底）
+│   ├── summary.py        #   摘要生成（中文结构化 + 全文版 + 启发式兜底）
 │   └── translate.py      #   标题/摘要中文翻译
 ├── notify/               # 输出与通知
 │   ├── mailer.py         #   SMTP 邮件发送
@@ -157,11 +160,13 @@ git remote set-url origin git@github.com:xuhaojun1/paper-tracker.git
 
 | 区块 | 关键字段 | 说明 |
 |------|---------|------|
-| 检索 | `categories`, `keywords`, `logic` | arXiv 分类 + 关键词，AND/OR 组合 |
+| 数据源 | `sources.hf_limit`, `sources.top_k` | HF Daily Papers 拉取数 / 本地打分后保留数 |
+| 数据源 | `sources.arxiv_workers`, `sources.arxiv_timeout` | arXiv 元数据补全并发数 / 超时 |
+| 关键词 | `keywords` | 本地打分用关键词（匹配 title / summary / ai_keywords） |
 | LLM | `base_url`, `model`, `api_key_env` | 任意 OpenAI 兼容 API |
 | 邮件 | `smtp_server`, `smtp_port`, `tls` | QQ / Gmail SMTP |
 | 站点 | `dir`, `title`, `theme` | GitHub Pages 输出 |
-| 筛选 | `filter.enabled`, `filter.top_k` | LLM 重要度打分，保留 Top K |
+| 筛选 | `filter.enabled`, `filter.top_k` | LLM 重要度精排，保留 Top K |
 | HTML全文 | `scrape.html_fulltext` | 抓取论文全文供 LLM 深度分析 |
 | 新鲜度 | `since_days`, `unique_only` | 时间窗 + 去重 |
 

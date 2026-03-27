@@ -55,7 +55,7 @@ def call_llm_summary(
 
     text = chat_completions(
         base_url=base_url, api_key=api_key, model=model, messages=messages,
-        temperature=0.2, max_tokens=600
+        temperature=0.2, max_tokens=800
     )
     data = json_loose(text)
     return {k: (data.get(k) or "").strip() for k in _STRUCTURED_FIELDS}
@@ -78,7 +78,7 @@ def call_llm_rich_summary(
 
     text = chat_completions(
         base_url=base_url, api_key=api_key, model=model, messages=messages,
-        temperature=0.2, max_tokens=800, timeout=60
+        temperature=0.2, max_tokens=1000, timeout=60
     )
     data = json_loose(text)
     return {k: (data.get(k) or "").strip() for k in _STRUCTURED_FIELDS}
