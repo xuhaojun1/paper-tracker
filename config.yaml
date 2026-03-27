@@ -12,10 +12,18 @@ keywords:
 #   - "Large Language Model"
 #   - "LLM"
   
-logic: "AND"                 # 组间逻辑：categories 与 keywords 间 AND/OR
+logic: "AND"                 # 组间逻辑：categories 与 keywords 间 AND/OR（仅 arXiv 备用搜索时生效）
 max_results: 200
-sort_by: "lastUpdatedDate"  # 还可以是submittedDate 建议改成lastUpdatedDate按更新时间排，能捞到v2/v3的“新增”
+sort_by: "lastUpdatedDate"
 sort_order: "descending"
+
+# —— 数据源设置 ——
+# 主源：HuggingFace Daily Papers（社区热门），arXiv 仅用于补全元数据
+sources:
+  hf_limit: 100              # 从 HF Daily Papers API 拉取的最大条数
+  top_k: 30                  # 本地关键词+热度打分后保留的候选数
+  arxiv_workers: 8           # arXiv 元数据补全的并发线程数
+  arxiv_timeout: 15          # arXiv 单次请求超时（秒）
 
 # zh / en / both
 lang: "both"

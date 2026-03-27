@@ -1,31 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-核心工作流管线：搜索 → 补链 → LLM 打分 → HTML 全文抓取 → LLM 摘要 → 翻译。
+核心工作流管线：HF 社区抓取 → 关键词快筛 → arXiv 元数据补全 → 补链 → LLM 打分 → HTML 全文抓取 → LLM 摘要 → 翻译。
 从 cli.py 拆分出来，便于测试和维护。
 """
 import os
-import json
-import re
-import pathlib
-import time
-from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Any, Optional, Set, Tuple
+from typing import Dict, List, Any, Optional, Tuple
 
-from .search import build_search_query, fetch_arxiv_feed, parse_feed, get_rich_context
+from .search import (get_rich_context,
+                     fetch_hf_papers, rank_and_filter, augment_arxiv_metadata)
 from .search.scraper import augment_item_links
 from .llm import call_llm_translate, call_llm_score_papers, call_llm_rich_summary, build_summary
 from .utils.logging import log_info, log_warn, log_error, log_debug
 from .utils.state import load_seen_ids, save_seen_ids
-
-
-def _parse_dt(s: str) -> Optional[datetime]:
-    if not s:
-        return None
-    s = s.replace("Z", "+00:00")
-    try:
-        return datetime.fromisoformat(s).astimezone(timezone.utc)
-    except Exception:
-        return None
 
 
 def fetch_papers(
@@ -34,67 +20,60 @@ def fetch_papers(
     verbose: bool = False,
 ) -> List[Dict[str, Any]]:
     """
-    阶段 1：arXiv API 搜索 + 分页 + 时间窗 + 去重。
-    返回候选论文列表。
+    阶段 1：从 HuggingFace Daily Papers 抓取候选论文，
+    按本地关键词 + 社区热度打分 → 去重 → 保留 top_k。
     """
-    q = build_search_query(cfg.categories, cfg.keywords, cfg.exclude_keywords, cfg.logic)
-    log_info(f"[Query] {q}")
-
     fresh_cfg = raw_cfg.get("freshness") or {}
     since_days = int(fresh_cfg.get("since_days", 0) or 0)
     unique_only = bool(fresh_cfg.get("unique_only", False))
     state_path = fresh_cfg.get("state_path", ".state/seen.json")
-    fallback_when_empty = bool(fresh_cfg.get("fallback_when_empty", False))
+
+    sources_cfg = raw_cfg.get("sources") or {}
+    hf_limit = int(sources_cfg.get("hf_limit", 100))
+    top_k = int(sources_cfg.get("top_k", 30))
 
     seen_ids = load_seen_ids(state_path) if unique_only and state_path else set()
-    cutoff = datetime.now(timezone.utc) - timedelta(days=since_days) if since_days > 0 else None
-    want_new = int(cfg.max_results or 200)
 
-    page_size = min(200, max(25, want_new))
-    max_pages = 20
-    start = 0
-    collected, reached_cutoff = [], False
+    # ── 1a) 从 HuggingFace 抓取 ──
+    items = fetch_hf_papers(limit=hf_limit, since_days=since_days)
 
-    for _page in range(max_pages):
-        xml = fetch_arxiv_feed(
-            q, start=start, max_results=page_size,
-            sort_by=cfg.sort_by, sort_order=cfg.sort_order
-        )
-        page_items = parse_feed(xml) or []
-        if not page_items:
-            break
+    # ── 1b) 去重（跳过已见 ID）──
+    if unique_only and seen_ids:
+        before = len(items)
+        items = [it for it in items if it.get("id") not in seen_ids]
+        if before != len(items):
+            log_info(f"[Dedup] 去重 {before} → {len(items)} 篇")
 
-        for it in page_items:
-            t = _parse_dt(it.get("updated")) or _parse_dt(it.get("published"))
-            if cutoff and t and t < cutoff:
-                reached_cutoff = True
-                break
-            aid = it.get("id")
-            if unique_only and aid and aid in seen_ids:
-                continue
-            collected.append(it)
-            if len(collected) >= want_new:
-                break
+    # ── 1c) 本地关键词 + 社区热度打分，保留 top_k ──
+    kw_list = list(cfg.keywords or []) if hasattr(cfg, 'keywords') else raw_cfg.get("keywords", [])
+    items = rank_and_filter(items, kw_list, top_k=top_k)
 
-        if len(collected) >= want_new or reached_cutoff:
-            break
-        if len(page_items) < page_size:
-            break
-        start += page_size
-
-    if not collected and fallback_when_empty:
-        xml = fetch_arxiv_feed(
-            q, start=0, max_results=want_new,
-            sort_by=cfg.sort_by, sort_order=cfg.sort_order
-        )
-        collected = parse_feed(xml) or []
-
-    if not collected:
-        log_warn("[Info] No new items after pagination/freshness/dedup filter.")
+    if not items:
+        log_warn("[Info] HuggingFace 源无候选论文。")
     else:
-        log_info(f"[Info] Fetched {len(collected)} new item(s) after pagination/dedup.")
+        log_info(f"[Info] HF 源筛选出 {len(items)} 篇候选")
 
-    return collected
+    return items
+
+
+def augment_metadata(
+    items: List[Dict[str, Any]],
+    raw_cfg: Dict[str, Any],
+    verbose: bool = False,
+) -> None:
+    """
+    阶段 1.5：异步抓取 arXiv 页面补全作者、机构、分类等元数据。
+    """
+    sources_cfg = raw_cfg.get("sources") or {}
+    max_workers = int(sources_cfg.get("arxiv_workers", 8))
+    timeout = int(sources_cfg.get("arxiv_timeout", 15))
+
+    augment_arxiv_metadata(
+        items,
+        max_workers=max_workers,
+        timeout=timeout,
+        verbose=verbose,
+    )
 
 
 def augment_links(

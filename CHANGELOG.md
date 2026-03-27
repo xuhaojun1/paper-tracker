@@ -4,6 +4,35 @@
 
 ---
 
+## [0.4.0] - 2026-03-27
+
+### 数据源切换：HuggingFace 社区热门替代 arXiv 关键词搜索
+
+**架构变更**
+- 主数据源从 arXiv API 关键词搜索切换为 **HuggingFace Daily Papers API**，利用社区已有的投票/热度机制筛选高质量论文
+- arXiv API 降级为**元数据补全**角色（补全作者、机构、分类、venue 等），不再承担搜索职责
+- 新工作流：HF Daily Papers 抓取 → 本地关键词+社区热度打分 → 去重 → top_k 候选 → 异步 arXiv 元数据补全 → 后续 pipeline 不变
+
+**Added**
+- `search/hf_client.py`：HuggingFace Daily Papers API 客户端
+  - `fetch_hf_papers()`：抓取 HF Daily Papers，转换为与 arXiv parser 兼容的统一 item 格式
+  - `keyword_score()`：本地关键词匹配打分（title 3x / summary 1x / ai_keywords 2x）+ HF upvotes + GitHub stars 加权
+  - `rank_and_filter()`：按综合分排序，保留 top_k
+  - `augment_arxiv_metadata()`：多线程并发请求 arXiv API 补全元数据（作者、机构、分类、comments、venue）
+- `config.yaml`：新增 `sources` 配置区块（`hf_limit` / `top_k` / `arxiv_workers` / `arxiv_timeout`）
+- HF 源带来的新字段：`hf_upvotes`、`github_repo`、`github_stars`、`thumbnail`、`ai_summary`、`ai_keywords`、`hf_num_comments`
+
+**Changed**
+- `pipeline.py`：`fetch_papers()` 重写为 HF 源抓取 + 本地打分 + 去重；新增 `augment_metadata()` 阶段和 `_save_candidates_to_tmp()` 函数
+- `cli.py`：pipeline 步骤新增 2.5 阶段（异步 arXiv 元数据补全）
+- `search/__init__.py`：新增 `fetch_hf_papers`、`rank_and_filter`、`keyword_score`、`augment_arxiv_metadata` 导出
+
+**工作流变更**
+- 旧流程：arXiv API 关键词搜索 200 篇 → 分页 + 时间窗过滤 → LLM 打分 → 摘要
+- 新流程：HF Daily Papers 100 篇 → 本地关键词+热度打分保留 30 篇 → arXiv 元数据补全 → 补链 → LLM 精排 → 摘要
+
+---
+
 ## [0.3.1] - 2026-03-20
 
 ### 清理合并冲突 & 本地定时运行支持
@@ -145,10 +174,11 @@
 目前文件结构：
 arxiv_tracker/
 ├── cli.py                # CLI 入口，参数解析与调度
-├── pipeline.py           # 核心工作流管线（搜索→打分→全文→摘要→翻译）
+├── pipeline.py           # 核心工作流管线（HF抓取→打分→元数据补全→补链→LLM打分→全文→摘要→翻译）
 ├── config.py             # Settings 数据类 + YAML 加载
 ├── search/               # 论文搜索与获取
-│   ├── query.py          #   arXiv 查询字符串构造
+│   ├── hf_client.py      #   HuggingFace Daily Papers 抓取 + 关键词打分 + arXiv 元数据补全
+│   ├── query.py          #   arXiv 查询字符串构造（备用）
 │   ├── client.py         #   arXiv API HTTP 请求 + 重试
 │   ├── parser.py         #   Feed XML 解析
 │   ├── scraper.py        #   代码链接补全（HTML页 + PDF兜底）

@@ -4,7 +4,7 @@ from .config import Settings
 from .notify.output import save_json, save_markdown
 from .notify.email_template import render_email_html
 from .pipeline import (
-    fetch_papers, augment_links, score_and_filter,
+    fetch_papers, augment_metadata, augment_links, score_and_filter,
     fetch_html_content, generate_summaries, translate_items,
 )
 from .utils.state import load_seen_ids, save_seen_ids
@@ -163,8 +163,11 @@ def run(config_path, categories, keywords, exclude_keywords, logic, max_results,
             click.echo(f"[Run] translate : {trans_cfg.get('enabled', False)} -> {trans_cfg.get('lang', 'zh')}")
             click.echo(f"[Run] email     : enabled={email_cfg.get('enabled', False)}, detail={email_cfg.get('detail')}, max_items={email_cfg.get('max_items')}")
 
-        # ── 2) 搜索论文（分页 + 时间窗 + 去重）──
+        # ── 2) 搜索论文（HF 社区抓取 + 关键词快筛 + 去重）──
         items = fetch_papers(cfg, raw_cfg, verbose=verbose)
+
+        # ── 2.5) 异步补全 arXiv 元数据（作者、机构、分类等）──
+        augment_metadata(items, raw_cfg, verbose=verbose)
 
         # ── 3) 补全代码/项目链接 ──
         augment_links(items, raw_cfg, verbose=verbose)
