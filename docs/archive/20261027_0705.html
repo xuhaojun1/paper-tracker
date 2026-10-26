@@ -1,0 +1,524 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paper Tracker 论文速递</title><style>
+:root {
+  --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#667085; --border:#e5e7eb; --acc:#2563eb;
+}
+:root[data-theme="dark"] {
+  --bg:#0b0f17; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --border:#1f2937; --acc:#2563eb;
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.6;}
+.container{max-width:900px;margin:0 auto;padding:18px;}
+.header{display:flex;gap:10px;justify-content:space-between;align-items:center;margin:8px 0 16px;flex-wrap:wrap}
+h1{font-size:22px;margin:0}
+.badge{font-size:12px;color:#111827;background:var(--acc);padding:2px 8px;border-radius:999px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin:14px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.title{font-weight:700;margin:0 0 6px 0;font-size:18px}
+.meta-line{color:var(--muted);font-size:13px;margin:2px 0}
+.links a{color:var(--acc);text-decoration:none;margin-right:12px}
+.detail{margin-top:10px;background:rgba(2,6,23,.03);border:1px solid var(--border);border-radius:10px;padding:8px 10px}
+summary{cursor:pointer;color:var(--acc)}
+.mono{white-space:pre-wrap;background:rgba(2,6,23,.03);border:1px solid var(--border);padding:10px;border-radius:10px}
+.row{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width: 860px) {
+  .row-2{grid-template-columns:1fr 1fr}
+}
+.footer{color:var(--muted);font-size:13px;margin:20px 0 10px}
+.hr{height:1px;background:var(--border);margin:14px 0}
+.history-list a{display:block;color:var(--acc);text-decoration:none;margin:4px 0}
+.controls{display:flex;gap:8px;align-items:center}
+.btn{border:1px solid var(--border);background:var(--card);padding:6px 10px;border-radius:10px;cursor:pointer;color:var(--text)}
+.btn:hover{border-color:var(--acc)}
+</style>
+<script>
+(function() {
+  const root = document.documentElement;
+  function apply(t) {
+    if (t==='dark') root.setAttribute('data-theme','dark');
+    else if (t==='light') root.removeAttribute('data-theme');
+    else {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        root.setAttribute('data-theme','dark');
+      else root.removeAttribute('data-theme');
+    }
+  }
+  let t = localStorage.getItem('theme') || 'light';
+  if (!['light','dark','auto'].includes(t)) t='light';
+  apply(t);
+  window.__toggleTheme = function() {
+    let cur = localStorage.getItem('theme') || 'light';
+    if (cur==='light') cur='dark';
+    else if (cur==='dark') cur='auto';
+    else cur='light';
+    localStorage.setItem('theme', cur);
+    apply(cur);
+    const el=document.getElementById('theme-label');
+    if(el) el.textContent = cur.toUpperCase();
+  }
+  window.__expandAll = function(open) {
+    document.querySelectorAll('details').forEach(d => d.open = !!open);
+  }
+})();
+</script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Paper Tracker 论文速递</h1>
+      <div style="display:flex;gap:10px;align-items:center">
+        
+<div class="controls">
+  <button class="btn" onclick="__toggleTheme()">Theme: <span id="theme-label" style="margin-left:6px">AUTO</span></button>
+  <button class="btn" onclick="__expandAll(true)">Expand All</button>
+  <button class="btn" onclick="__expandAll(false)">Collapse All</button>
+</div>
+
+        <span class="badge">2026-10-27 07:05</span>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <div>Snapshot: 20261027_0705</div>
+    <div class="row"><div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>FocusVLA: Future-Intent Guided Dynamic View Routing for Vision-Language-Action Models</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Huixin Xu, Ziya Yu, Peng Li</div>
+<div class="meta-line">Venue: CoRL 2026</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="meta-line">Comments: Accepted at CoRL 2026</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31423">Abs</a> · <a href="https://arxiv.org/pdf/2610.31423">PDF</a> · <a href="https://huggingface.co/huggingface">Code1</a> · <a href="https://huggingface.co/docs/hub/spaces">Code2</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Vision-language-action (VLA) models have become an important paradigm for robotic manipulation by unifying visual perception, language understanding, and action generation. Since reliable manipulation requires sufficient observation of objects, end-effectors, and their spatial relationships, multi-view inputs are widely used to provide complementary spatial information. However, our experiments show that existing VLA models do not fully exploit such multi-view complementarity. The policy tends to persistently rely on the wrist view, lacking the ability to dynamically adjust global-local view dependency across manipulation stages, which limits stage adaptability and robustness. To address this issue, we propose FocusVLA, a stage-aware multi-view routing framework. FocusVLA predicts future interaction intent from historical actions and uses it to guide dynamic view routing during action generation. By adaptively coordinating global and local observations across different task stages, FocusVLA improves multi-view utilization. On RoboTwin 2.0, FocusVLA improves the average success rate over the strongest baseline π_{0.5} by 10.10 pp. In real-world evaluation, FocusVLA improves the success rate from 71.7\% to 85.0\%, achieving a 13.3\% gain over π_{0.5}. Moreover, the intent prediction and dynamic routing modules of FocusVLA can be integrated into existing VLA frameworks without modifying their core architectures.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Vision-language-action (VLA) models have become an important paradigm for robotic manipulation by unifying visual perception, language understanding, and action generation.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Echo: Coupled Action and Task Status Signal Denoising for Vision Language Action Models</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Yufeng Liu, Bohao Fan, Juntu Zhao, Xinyi Wang, Hang Yu, Wenzhuan Luo, Yingzhi Wang, Qinghai Li, Yingdong Hu, Junliang Guo, Richard Wang, Dequan Wang, Yang Gao, Cheng Ma</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="meta-line">Comments: Project page: https://lyfeng001.github.io/Echo/</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31569">Abs</a> · <a href="https://arxiv.org/pdf/2610.31569">PDF</a> · <a href="https://github.com/lyfeng001/Echo-Sim">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://lyfeng001.github.io/Echo/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Recognizing task completion and failure enables robots to stop upon success and initiate recovery or replanning after failure. Existing methods augment Vision Language Action (VLA) policies with task status signal prediction to support these execution decisions. However, learning and integrating these signals can require fine-grained supervision, external monitoring models, or complex architectural designs. Moreover, the potential of task status signals to directly guide action generation remains underexplored. We present Echo, a framework that combines task status signal learning without frame-level progress annotations with a compact design for status prediction and action generation within a single VLA. Specifically, Echo represents task status with stop and failure signals, added as two dimensions of each action chunk and denoised together with robot actions. Their combination distinguishes ongoing execution, successful completion, and failure. To learn these signals without fine-grained progress annotations, Echo constructs successful, failed, and recovery trajectories with complementary supervision properties. To enable status signal-guided action generation, Echo controls interactions between the signals and actions and denoises the signals faster than the actions. These allow later action denoising steps to condition on cleaner status estimates while preserving accurate signal prediction. Extensive real-world manipulation experiments show that Echo accurately predicts task status and consistently improves policy performance.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Recognizing task completion and failure enables robots to stop upon success and initiate recovery or replanning after failure.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>HiSTEVE 1.0: Harnessing Human-Interface VLA Agents for Open-World Games</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Zecong Tang, Zian Guan, Yuncheng Guo, Zhanqiu Zhang, Yiwen Guo, Bo Dai</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31162">Abs</a> · <a href="https://arxiv.org/pdf/2610.31162">PDF</a> · <a href="https://huggingface.co/huggingface">Code1</a> · <a href="https://huggingface.co/docs/hub/spaces">Code2</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Building virtual embodied agents that operate in open-ended games like human players is a long-standing goal requiring both long-horizon autonomy and reliable native-interface control. As a procedurally generated open world, Minecraft provides a natural testbed for studying the integration of these capabilities. Existing agents typically provide either native visuomotor control without long-horizon autonomy or high-level planning executed through environment APIs or predefined skills. To bridge this gap, we propose HiSTEVE, a hierarchical VLA agent with a capability-aware agent harness. At the orchestration level, we equip the harness with structured memory for tracking progress and a VLM planner for selecting subtasks within the VLA&#x27;s capabilities. To reliably determine subtask completion, we further introduce a policy-coupled task completion state detector that conditions on VLA policy context to signal candidate completion. At the control level, a single VLA executes all subtasks with vision-only perception and native keyboard-and-mouse actions. To mitigate interference between heterogeneous GUI and non-GUI interactions, we introduce regime-specific RMSNorm branches and separate mouse-movement token embeddings. We also train the VLA through world knowledge injection, imitation learning, and reinforcement learning with environment feedback to improve reliability and recovery. HiSTEVE achieves state-of-the-art atomic-task performance, scoring 85.0% on MineStudio Bench and a 37.4% average success rate on OpenHA, while also completing long-horizon tasks such as crafting an iron pickaxe from scratch like human players.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Building virtual embodied agents that operate in open-ended games like human players is a long-standing goal requiring both long-horizon autonomy and reliable native-interface control.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>WeVisOne-VL: Unified Visual Perception from Objects to Pixels</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Tianming Liang, Junyi Pan, Yuxi Li, Canmiao Fu, Zhipeng Huang, Chong Sun, Chen Li, Jing Lyu</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31329">Abs</a> · <a href="https://arxiv.org/pdf/2610.31329">PDF</a> · <a href="https://github.com/Tencent/WeVisOne-VL">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://tencent.github.io/WeVisOne-VL">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Existing vision-language models (VLMs) remain unreliable for fine-grained visual perception. In this report, we present WeVisOne-VL (WeChat Vision All-in-One), a powerful VLM that unifies object-level and pixel-level perception through structured next-token prediction. It supports multiple visual tasks including object detection, referring localization, counting, OCR, segmentation, and matting, enabling localization at any user-specific granularity, from points and boxes to masks and alpha mattes. Architecturally, we integrate a lightweight pixel decoder into the VLM via a special &lt;OBJ&gt; token to generate instance-level pixel outputs. We train the model with a three-stage curriculum SFT followed by mixed-task RL. Across over 30 benchmarks, WeVisOne-VL demonstrates leading performance on both object-level and pixel-level tasks, while maintaining robust rejection for object-absent queries. By releasing WeVisOne-VL to the open-source community, we hope to advance VLMs from broad visual understanding toward truly reliable perception systems for real-world deployment.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Existing vision-language models (VLMs) remain unreliable for fine-grained visual perception.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Reading, Writing, Sharing, and Interacting with the World through Video</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Shengqiong Wu, Meng Luo, Bobo Li, Ziwei Liu, Shuicheng Yan, Ming-Hsuan Yang, Philip Torr, Hao Fei</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="meta-line">Comments: 102 pages, 17 figures, 19 tables. Project page: https://vid-gen.github.io/video-world-model-survey</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31668">Abs</a> · <a href="https://arxiv.org/pdf/2610.31668">PDF</a> · <a href="https://github.com/vid-gen/awesome-video-world-model">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://vid-gen.github.io/video-world-model-survey/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Video foundation models have advanced rapidly in understanding and generating visual sequences, while video world models seek to capture the underlying dynamics of the world they depict. Despite their different objectives, both concern the relationship between video observations and an evolving world. This survey adopts world modeling as a unifying lens for examining these developments. Viewing an observed video as a partial, lossy, and temporally ordered projection of a latent temporal world, we organize the literature around four complementary operations: reading infers world properties from observed video; writing synthesizes video from specified or learned world conditions; sharing integrates understanding and generation through common modeling mechanisms; and interacting predicts and updates world states under actions and evolving observations. This perspective distinguishes temporal coherence in observed or generated sequences from consistency in the underlying world state. Across tasks, representations, models, datasets, and benchmarks, we trace a shift in emphasis from clip-level recognition and perceptual fidelity toward persistent state, controllable evolution, physical and causal validity, and evaluation grounded in interaction and downstream decisions, and we distill the open challenges that follow.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Video foundation models have advanced rapidly in understanding and generating visual sequences, while video world models seek to capture the underlying dynamics of the world they depict.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Making MLLM Latents Matter: Factor-Aware Predictive Learning for Cinematic Video Generation</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Songlin Yang, Zhe Wang, Xiaotong Zhao, Xi Wang, Ran Zhang, Shuai Li, Taiyi Wu, Songlian Li, Eric Liu, Alan Zhao, Anyi Rao</div>
+<div class="meta-line">First: 2026-10-22T04:43:48.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30926">Abs</a> · <a href="https://arxiv.org/pdf/2610.30926">PDF</a> · <a href="https://github.com/Songlin1998/ShotVerse2.0">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://shotverse.github.io/fapl/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Cinematic video generation requires both temporal inference from limited inputs (i.e., sparse rather than frame-by-frame guidance) and factor-aware control of character, scene, action, and camera. Multimodal large language models (MLLMs) offer useful priors for both capabilities, but their representations are not automatically actionable for video generation: a Video Diffusion Transformer (DiT) may bypass them through native conditioning pathways, and using them does not ensure either factor-aware control or generation-compatible temporal prediction. We propose Factor-Aware Predictive Learning (FAPL), which establishes effective MLLM latent use as a shared prerequisite and then targets the two capabilities with complementary learning signals. First, latent-only generator grounding trains the DiT with a frozen MLLM and connector, strengthening the DiT&#x27;s use of MLLM latents for generation. Second, for factor-aware control, paired videos specify a target-factor change and non-target preservation, and factor-span replacement trains the DiT to realize this relationship in its output. Third, for temporal inference, text-only and text-plus-complete-video observations share a video target, and the trained DiT is then frozen while the MLLM and connector are optimized through it. This final stage trains limited-input representations for generation while retaining complete-observation reconstruction as a complementary training mode. Extensive experiments demonstrate our consistently better performance on three cinematic video generation tasks (i.e., sparse-to-video, factor-aware editing, and multi-shot generation) over baselines and validate FAPL&#x27;s contributions to MLLM feature use, temporal control, and factor coordination.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Cinematic video generation requires both temporal inference from limited inputs (i.e., sparse rather than frame-by-frame guidance) and factor-aware control of character, scene, action, and camera.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Toward Recursive Self-Improvement in Physical AI</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Meng Luo, Zechen Bai, Shanqing Xu, Yanlin Li, Kaixin Li, Mengchen Qian, Weifeng Lu, Ran Zhang, Yingtian Zou, Ziyang Luo, Wei Chen, Hongzhan Lin</div>
+<div class="meta-line">First: 2026-10-20T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: 93 pages, 15 figures, 21 tables. Project page: https://physical2rsi.github.io/</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.29677">Abs</a> · <a href="https://arxiv.org/pdf/2610.29677">PDF</a> · <a href="https://github.com/Physical2RSI/Awesome-Physical2RSI">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://physical2rsi.github.io">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Recursive self-improvement (RSI) describes a system that improves not only its behavior but also the process by which it improves. Recent digital agents test this idea by rewriting their own code and checking each version with executable tests. Bringing these mechanisms into the physical world requires learning from partial observations through costly trials, while accounting for changing operating conditions and potentially irreversible consequences. We position RSI within robot learning and trace pathways from improving robot capabilities to improving the processes that generate them. We examine how physical experience can strengthen these improvement mechanisms and when the resulting gains can support further self-improvement of the mechanisms themselves. Gains carry forward only when feedback addresses remaining learning needs, the receiving component can use the change, its value survives changes in tasks or hardware, and continued practice remains safe and affordable. Existing studies, concentrated in manipulation, support behavioral improvement, benefits to later learning, and procedure improvement. Some systems also change the improver&#x27;s knowledge or tools, but the physical studies reviewed here have yet to isolate gains attributable to recursion. We synthesize these findings into evaluation principles and research directions for machines that, trial by trial, safely improve the way they improve.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Recursive self-improvement (RSI) describes a system that improves not only its behavior but also the process by which it improves.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>RSIHub: A Composable Framework for Agent-Evolution Methods</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Zimu Wang, Xiaobo Wang, Siyu Ye, Jiaqi Li, Silin Chen, Yuling Shi, Ruobing Wang, Jingjing Zhang, Chaofan Wang, Kai Wu, Mengnan Qi, Kai Cai, Xiaodong Gu, Zilong Zheng</div>
+<div class="meta-line">Venue: NeurIPS 2026</div>
+<div class="meta-line">First: 2026-10-22T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="meta-line">Comments: NeurIPS 2026 Meta-Agents Workshop</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.32253">Abs</a> · <a href="https://arxiv.org/pdf/2610.32253">PDF</a> · <a href="https://github.com/simple-agent-lab/RSIHub">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://simpleagentlab.com/rsihub">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Agent-evolution methods use execution feedback to improve prompts, skills, tools, and orchestration, but their implementations often rebuild the same experimental machinery. We present RSIHub, an open-source framework for building, comparing, and extending these methods on shared infrastructure. Recipes compose reusable operators and declare mutable resources; RSIHub supplies execution, evaluation, recovery, and lineage. Researchers can focus on evolution policy while evaluation stays outside the mutable surface and results remain tied to candidates and evaluation conditions. We instantiate AHE, Hyperagents, A-Evolve, and GEPA without modifying the framework core, keeping method-specific logic in recipes and operators. We evaluate them with MiniSWE and Codex on Terminal Bench 2 and τ^3 Banking under fixed model and evaluator configurations. The largest observed overall pass@1 gain is 13.5 percentage points, while method rankings vary across settings and optimization gains do not always transfer to held-out tasks. RSIHub provides a common protocol for comparing evolution policies, inspectable candidate histories, and reusable components for developing new methods.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Agent-evolution methods use execution feedback to improve prompts, skills, tools, and orchestration, but their implementations often rebuild the same experimental machinery.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Is Complex Agentic Memory Always Needed? Naive RAG Is Stronger Than We Thought</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Zhengye Bao, Shengtao Zhang, Haokai Zhang, Shiqi Lou, Muning Wen, Minnan Luo</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: 62 pages, 5 figures. Includes appendices</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30755">Abs</a> · <a href="https://arxiv.org/pdf/2610.30755">PDF</a> · <a href="https://github.com/Litmeb/RAW-RAG">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">LLM memory is widely used in long-term conversation understanding. Agentic memory systems often use mutation, structural organization, learned retrieval strategies, or other complex operations. Is this complexity always necessary? We study Raw-RAG, a naive RAG baseline using dense retrieval and reranking over raw history to supply evidence to a reader LLM. Across LoCoMo, LongMemEval, MEME, and MemoryAgentBench, Raw-RAG ranks first among the compared memory systems in six of seven benchmark-model settings, outperforming the strongest compared agentic memory system by 0.13-5.53 points. We investigate why raw-history retrieval remains competitive. Evidence analysis shows that its higher coverage of necessary evidence can offset lower utilization. Useful evidence includes both answer values and the relations and dependency paths needed to derive them. Even complete access to transformed memory stores leaves an accuracy gap relative to raw evidence, highlighting the importance of preserving raw information. These findings challenge the necessity of complex agentic memory for the evaluated conversation tasks and establish naive RAG as an essential baseline.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">LLM memory is widely used in long-term conversation understanding.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>F2G-Pose: Geometry-Aware Foundation Feature Lifting for Direct RGB-D Category-Level Object Pose Estimation</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Jinyu Zhang, Haitao Lin, Jiashu Hou, Xiangyang Xue, Yanwei Fu</div>
+<div class="meta-line">Venue: NeurIPS 2026</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: Accepted at NeurIPS 2026. 22 pages, including the complete technical appendix</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31623">Abs</a> · <a href="https://arxiv.org/pdf/2610.31623">PDF</a> · <a href="https://github.com/jrryzh/F2G-Pose">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://jrryzh.github.io/F2G-Pose/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">This paper studies category-level RGB-D object pose estimation, which recovers an object&#x27;s 3D rotation and translation without instance-specific CAD models or reference views. This task is highly ambiguous due to intra-class variations, symmetries, and partial observations. Current solutions struggle to balance reliability and efficiency: methods based on intermediate structures are prone to error propagation, while diffusion models suffer from high inference latency and complex post-hoc candidate extraction. To address this, we present F2G-Pose, a real-time direct, single-pass framework that predicts category-level pose, metric size, and camera-frame completed shape from a single RGB-D observation in one feed-forward pass. F2G-Pose lifts dense visual foundation features to partial point clouds, encodes local geometry with DGCNN tokenization, and integrates object-level structure with a Mixture-of-Experts Transformer. Joint size prediction and camera-frame shape completion encourage metric consistency through dense geometric supervision. With its task-specific network trained only on pose-annotated synthetic SOPE data and its frozen RADIO backbone externally pretrained, F2G-Pose achieves state-of-the-art accuracy on SOPE and ROPE while running at 28 FPS for pose-only inference, and further demonstrates strong camera-frame geometry on HouseCat6D and real-object transfer on HANDAL. Analyses of latency, robustness, shape completion, and GenPose++ candidate behavior further demonstrate the efficiency and reliability of F2G-Pose, with real-world manipulation experiments demonstrating deployment potential under segmented RGB-D inputs. The project page, code, and pretrained models are made available at https://jrryzh.github.io/F2G-Pose/.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">This paper studies category-level RGB-D object pose estimation, which recovers an object&#x27;s 3D rotation and translation without instance-specific CAD models or reference views.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Self-Distilling Future Video Representations for World Action Models</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Huiwon Jang, Suhyeok Jang, Hyeonmo Kang, Seungku Kim, Jinwoo Shin, Sihyun Yu</div>
+<div class="meta-line">First: 2026-10-20T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: 27 pages; Project page: https://huiwon-jang.github.io/FRED/</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30320">Abs</a> · <a href="https://arxiv.org/pdf/2610.30320">PDF</a> · <a href="https://github.com/suhyeok-jang/FRED">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://huiwon-jang.github.io/FRED/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">World Action Models (WAMs) have emerged as a promising approach to learning generalist robot policies using rich spatiotemporal priors from pre-trained video diffusion models. A recent line of WAMs improves inference efficiency by conditioning a separate action decoder on intermediate future video representations extracted from a single denoising step, avoiding costly iterative denoising required for video generation. This design makes action prediction depend directly on the quality of these future representations. In this paper, we introduce Future REpresentation learning via self-Distillation with temporal context (FRED), a framework that trains WAMs to improve the quality of future video representations from noise in a single denoising step. Specifically, FRED uses self-distillation to predict future representations from noise, using representations extracted from ground-truth future observations as targets. We further condition the video model on historical observations, providing temporal context for predicting future representations better. Across diverse real-world manipulation scenarios, FRED consistently outperforms competing WAMs. It achieves particularly large gains on long-horizon and out-of-domain tasks under zero-shot environment generalization, and substantially improves human-to-robot skill transfer, reaching 50.0% task success on tasks absent from robot training data and demonstrated only in human videos, compared with 19.4% for the best competing WAM.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">World Action Models (WAMs) have emerged as a promising approach to learning generalist robot policies using rich spatiotemporal priors from pre-trained video diffusion models.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>LaLa-World: Scaling Latent World Models with Natural Language Actions</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Junha Song, Geonmo Gu, Jeongeun Park, Heejeong Nam, Lucas Maes, Byeongho Heo, Dongyoon Han, Sangdoo Yun</div>
+<div class="meta-line">First: 2026-10-20T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: Project page: https://june-page.github.io/lala-world/ Code: https://github.com/junha1125/LaLa-World</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.27851">Abs</a> · <a href="https://arxiv.org/pdf/2610.27851">PDF</a> · <a href="https://github.com/junha1125/LaLa-World">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://june-page.github.io/lala-world/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">This paper shows that JEPA-style latent world models (LWMs) can learn across diverse domains and data sources by adopting the language-conditioned interface of video generation models. We establish this approach as an effective and efficient basis for planning with imagination and downstream policy fine-tuning. To this end, we introduce LaLa-World, a Language-conditioned Latent World model that learns from simulation and robot trajectories together with broader image and video data. Two designs make this work. First, we describe both numerical actions and visual changes in language, enabling joint training of a single future predictor across heterogeneous datasets. Second, we build the predictor on a language model, allowing it to interpret language conditions while predicting future latent states. The resulting predictor achieves higher average MPC planning performance than existing LWMs trained separately for each domain or task. Adding image and video data further improves average planning performance and robustness to action phrasing. In a matched comparison with an RAEv2-based video generation model baseline, LaLa-World reaches comparable planning performance with 6times less training cost and 13.9times faster planning. Beyond planning, the pretrained LaLa-World serves as an initialization for LaLa-Policy, which jointly predicts actions and future visual representations. LaLa-Policy performs competitively with Cosmos Policy on LIBERO and RoboCasa, with up to 5.5times faster inference.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">This paper shows that JEPA-style latent world models (LWMs) can learn across diverse domains and data sources by adopting the language-conditioned interface of video generation models.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>RynnUnify: Towards Unified Embodied Brain</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Minghao Zhu, Bohan Hou, Kun Xiang, Zixuan Wang, Yinzhou Tang, Yifei Yang, Zhikai Wang, Tianyi Zhang, Kehan Li, Haoyu Zhao, Siteng Huang, Leigang Qu, Sicong Leng, Dongchi Huang, Mingxiu Chen, Shijian Lu, Yue Wang, Xiaodan Liang, Zhenyu Zeng, Deli Zhao, Chengju Liu, Jianfei Yang, Xin Li</div>
+<div class="meta-line">First: 2026-10-22T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.32965">Abs</a> · <a href="https://arxiv.org/pdf/2610.32965">PDF</a> · <a href="https://github.com/alibaba-damo-academy/RynnUnify">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://alibaba-damo-academy.github.io/RynnUnify.github.io/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">We introduce RynnUnify, a 16B unified embodied model that combines strong embodied understanding with long-horizon visual planning through interleaved video--language reasoning. With capabilities spanning spatial reasoning, physical prediction, and grounding, RynnUnify connects an understanding of the physical world with visual anticipation of how it evolves across successive subtasks. Building on these capabilities, we further develop an agentic extension through reinforcement learning to selectively use video predictions for reasoning about unobserved states and interaction outcomes. We also develop a world-action extension of the full RynnUnify model, translating its understanding and prediction capabilities into robot control. To evaluate these capabilities, we introduce Rynn-VP and Rynn-GEU for long-horizon visual planning and anticipatory reasoning. Experiments show that RynnUnify achieves the highest average embodied understanding score among the evaluated unified multimodal models and improves the Rynn-VP overall score by 9.75 points over Cosmos 3 Nano. Its agentic extension improves the Rynn-GEU average by 6.0 points over direct reasoning, while the world-action extension achieves 51.5\% success on 20 selected composite RoboCasa365 tasks and 46.7\% average success across three real-robot tasks. Together, these results establish RynnUnify as a shared foundation for embodied understanding, visual planning, and robot control, taking a step toward a unified embodied brain.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">We introduce RynnUnify, a 16B unified embodied model that combines strong embodied understanding with long-horizon visual planning through interleaved video--language reasoning.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>IQuest-Q1: Advancing Foundation Capabilities for Agentic CLI Systems</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: A. Jian Yang, An Huang, Bo Dan, Chen Mu, Chengran Yang, Chuan Shi, Feng Chang, Hongxin Li, Hongyuan Tao, Jinxing Zhang, Jujie He, Kun Wang, Lin Jing, Ming Yang, Qicheng Hu, Renyuan Li, Shark Liu, Shawn Guo, Shi Qing, Shi Zhong, Tianyu Zheng, Wei Liu, Wei Zhang, Wenrui Cai, Wenxiao Chen, Xuxing Chen, Yan Xing, Yi Xing, Yifan Luo, Yiran Xing, Yizhi Li, Yongsheng Kang, Yucheng Ding, Yue Song, Yun Qing, Yunqi Liu, Zelong Huang, Zhengmao Ye, Zhentao Fan, Zhiteng Li, Ziling Huang, Bihong Tang, Bingli Wang, Ce Jun, Changhao Chen, Chen Hu, Chen Xiao, Chi Liu, Chunjiang Ge, Danyang Li, Deyang Kong, Dian Qi, Ding Tan, Evan Yang, Fanglin Xu, Fei Bai, Gang Liu, Guochang Li, Hao Tang, Haoran Feng, Haowen Wang, Huahao Hu, Huanjin Yao, Huatong Song, Jia Deng, Jiajun Wu, Jialiang Cheng, Jiayi Liang, Jiayi Wu, Jie Deng, Jiejun Tan, Jing Yang, Jingda Xu, Junhang Cheng, Junxiao Liu, Kai Lv, Kaixiang Pan, Kecheng Lu, Kun Zeng, Kun Zheng, Kunbo Ding, Liang Qiu, Lingyi Sun, Luan Zhang, Mengxiao Lv, Ning Dong, Pei Wang, Peng Zhang, Qingsong Cai, Qixiang Yin, Qiyao Wang, Renbiao Liu, Renfei Dang, Ruihang Li, Ruirui Huang, Shanhui Yin, Shen Jian, Shengjie Fang, Shikai Li, Shinan Zhang, Shiqi Chen, Shuai Liu, Shuangqi Li, Shuo Tang, Shuqing Deng, Sijin Hao, Siwei Wu, Siyue Wang, Tao Hai, Tao Ren, TingYang Chen, Wei Shao, Weicheng Gu, Weihan Peng, Wenlong Miao, Xavier Yu, Xiangyuan Ji, Xiaocheng Li, Xiaodong Huang, Xiaohan Ge, Xiaoxiang Shi, Xiaoyang Zhang, Xiaoyu Yang, Xidong Wang, Xin Li, Xinyu Tang, Xiyuan Yang, Xudong Ma, Ya Tong, Yachao Wang, Yang Tian, Yaxin Du, Yeli Ruan, Yi Wang, Yi Yu, Yibin Feng, Yibo Tan, Yihang Wang, Yiming Ju, Yinda Chen, Yinda Chen, Yingjie Du, Yiwei Liu, Yizhi Zhou, Yuan Wei, Yuli Chen, Yuqi Zhu, Yuwen Li, Yuxi Dong, Yuxuan Zhang, Yuyang Song, Zhange Zhang, Zhaohan Zhang, Zhaoyi Li, Zhen Zhang, Zhengbo Zhang, Zhihang Hu, Zhiwei Yu, Zhixin Xie, Zhiyu Chen, Zhizhao Luo, Zhongyuan Wu, Zhou Fang, Zhu Lin, Zhuocheng Gong, Zixi Zhao, Ziyang Zeng, Ziyi Wang, Ziyu Zhao, Ran Tao, Mingjie Tang, Chuan Hao, Peihao Wu, Jianzhou Wang, Nan Jiang, Yuan Zhi, Bryan Dai</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: IQuest Report</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30949">Abs</a> · <a href="https://arxiv.org/pdf/2610.30949">PDF</a> · <a href="https://huggingface.co/huggingface">Code1</a> · <a href="https://huggingface.co/docs/hub/spaces">Code2</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">We present IQuest-Q1, a sparse Mixture-of-Experts (MoE) agentic foundation model with 320B total parameters (15B activated). IQuest-Q1 is developed through a three-stage process: (1) stable and efficient pre-training, combining Stable SplitNorm, Muon, and muP with a two-stage curriculum whose second stage increases the coding-data mixture, preserving a wide stability margin between safe and optimal learning rates; (2) fine-grained mid-training, expanding the data mixture across domains and formats and progressively extending the context; and (3) multi-scaffold with multi-version post-training, combining SFT, domain-specialized RL, and MOPD across various scaffolds to integrate complementary training signals and strengthen agentic coding capabilities. Furthermore, model merging combines different experts and checkpoints from different stages while mitigating conflicts among their parameter updates. The resulting IQuest-Q1 demonstrates capabilities in both coding and general tasks. We release IQuest-Q1 as an open-source model to support community research and development.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">We present IQuest-Q1, a sparse Mixture-of-Experts (MoE) agentic foundation model with 320B total parameters (15B activated).</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Beyond Watching and Searching: Benchmarking Agents for Video-centered Deep Research Reports</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Jiahao Meng, Qize Yang, Yuxuan Wang, Yunfei Chu, Wensi Dai, Jin Xu, Yunhai Tong</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31158">Abs</a> · <a href="https://arxiv.org/pdf/2610.31158">PDF</a> · <a href="https://github.com/marinero4972/OmniDR-Bench">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Deep research agents synthesize open-web evidence into long reports, but current benchmarks do not evaluate research centered on a source video. We introduce Video-Centered Deep Research Report Generation. Given a video and user request, an agent identifies research questions, retrieves external multimodal evidence, and produces an interactive report linked to relevant video moments. This task has direct practical value because it helps users locate relevant moments, verify claims, reproduce demonstrated procedures, and make informed decisions from video content. We present a skill-based workflow and OmniDR-Bench for this task. For evaluation, we propose Omni Atomic Rubric Trees (Omni-ARTs). Each tree contains three dimensions, 23 shared directions, and task-specific atomic binary criteria. The directions test audiovisual grounding, multimodal evidence use, and interactive presentation. Audited Rubric Construction (ARC) builds these trees through independent evidence collection, automated checks, behavioral calibration, and iterative human review. OmniDR-Bench contains 50 Chinese and English tasks across 19 realworld subcategories. It includes 6,414 criteria. Across 18 agent configurations, the best system scores 63.3 out of 100. Current agents still need broader content coverage, stronger causal and logical analysis across modalities, and more accurate citation support. We further analyze models, harnesses, skill configurations, video categories, and research trajectories. The code and data are released at https://github.com/marinero4972/OmniDR-Bench.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Deep research agents synthesize open-web evidence into long reports, but current benchmarks do not evaluate research centered on a source video.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>UserArena: Benchmarking Interactive User Simulation for Long-Horizon Shopping Agents</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Jujia Zhao, Jiakai Tang, Jing Yu, Wen Chen, Jian Wu, Han Zhu, Fei Sun, Suzan Verberne, Zhaochun Ren</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30932">Abs</a> · <a href="https://arxiv.org/pdf/2610.30932">PDF</a> · <a href="https://github.com/RecGPT-Team/UserArena">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://recgpt-team.github.io/UserArena-Page/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Agentic recommendation pursues shopper goals through sequences of context-dependent decisions. Developing and evaluating such policies requires faithful recommendation world models that capture both the interactive shopping environment and users&#x27; behavioral responses over long interactions. Existing resources rarely provide long-horizon, fine-grained real-user trajectories or support trajectory-level evaluation and offline validation against production A/B results. We introduce UserArena, a real-world e-commerce interactive benchmark containing 64,729 session trajectories from 11,010 users, spanning 566,102 items and 13 action types. UserArena pairs these trajectories with an interactive environment and supports offline validation against outcomes from a controlled production A/B test, enabling five-level evaluation from output validity and local decisions to sequential behavior, personalization, and outcomes. To improve simulator fidelity over these long-horizon interactions, we further propose On-Policy Trajectory Distillation (OPTD), which uses trajectory-level intent to provide dense teacher targets on student-generated rollouts. Experiments show that OPTD achieves the strongest overall fidelity among the evaluated simulators under UserArena&#x27;s evaluation protocol and most closely reproduces the production policy effect in offline simulation.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Agentic recommendation pursues shopper goals through sequences of context-dependent decisions.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>AnyGameRenderer: Entity-Consistent Generative Rendering Across Games and an Entity-Level Benchmark</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Ruicong Liu, Liangyang Ouyang, Fengbo Lan, Zhixiang Wang, Kaipeng Zhang</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31466">Abs</a> · <a href="https://arxiv.org/pdf/2610.31466">PDF</a> · <a href="https://github.com/AlayaLab/AnyGameRenderer">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://alaya-lab.github.io/AnyGameRenderer/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">AI coding agents can now build small playable games in minutes, but the results usually look like programmer art: gray blockouts, colored geometric primitives, and flat semantic blobs. We present AnyGameRenderer, a video-to-video generative renderer that turns such footage into high-quality visuals with characters, motion detail, and effects. Throughout, it keeps the layout, camera, and every entity&#x27;s position and timing intact.
+  Our AnyGameRenderer generalizes across a wide range of genres that agents build, such as tower defense, auto-battlers, top-down survivors, turn-based battles, kart racing, and crowd runners.
+  AnyGameRenderer takes plain video as its game-state input, with no complex representations such as engine G-buffers, per-object class labels, or low-poly proxies. Gray blockouts, colored primitives, semantic maps, and wireframes all work as input.
+  It also preserves entity correspondence: group counts stay correct, and entities appear and disappear on the right frame.
+  We implement AnyGameRenderer by LoRA fine-tuning MiniMax-H3 ref2va, a 33B reference-video-conditioned video generation model. Training uses sim10k paired clips from three sources: (i) multi-stream rendering data from 38 agent-made games exported from GEAR, an AI game-creation tool; (ii) two-stream rendering data from Unreal Engine, with programmatically controlled crowds, count changes, and entity scales; and (iii) real gameplay recordings, with pairs reconstructed via 3D-box detection.
+  To evaluate the entity correspondence, we propose an entity-level benchmark of 59 held-out cases with 753 entities, scored against ground-truth boxes. Compared with the base model, AnyGameRenderer better preserves entity correspondence: temporal match rises from 50.9\% to 62.9\%, missed count changes fall from 34.7\% to 21.3\%, and fewer entities are hallucinated or left unrendered.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">AI coding agents can now build small playable games in minutes, but the results usually look like programmer art: gray blockouts, colored geometric primitives, and flat semantic blobs.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Rethinking Sequence Compression with Test-time Regression</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Sihan Yang, Jie Huang, Hanxuan Li, Yifan Guo, Weigao Sun, Yiran Zhong, Weiyang Liu</div>
+<div class="meta-line">First: 2026-10-22T13:14:38.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: Technical report (19 pages, 4 figures, project page: https://spherelab.ai/ttr-compressor)</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31574">Abs</a> · <a href="https://arxiv.org/pdf/2610.31574">PDF</a> · <a href="https://github.com/Sphere-AI-Lab/ttr-compressor">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://spherelab.ai/ttr-compressor/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Sequence compression is a fundamental operation and a critical information bottleneck in efficient language and multimodal models, and yet prevailing approaches based on pooling or learned projections remain underperforming. We revisit sequence compression through the lens of test-time regression: input tokens define a regression problem whose fitted coefficients form the compressed representation. Importantly, the regression problem is learned end-to-end via backpropagation, while its coefficients are computed efficiently in closed form during the forward pass. This leads to TTR-Compressor, a general alternative to conventional pooling and projection-based compression. We evaluate TTR-Compressor as the compressor for block-wise sparse attention and the visual token merger for multimodal large language models. On block-wise sparse attention, TTR-Compressor improves RULER performance over attention-based compressors by a large margin. For visual token merging, it consistently outperforms the standard MLP merger and matches its performance with 55.6% fewer visual tokens. These results establish test-time regression as an effective primitive for sequence compression in efficient language and multimodal models.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Sequence compression is a fundamental operation and a critical information bottleneck in efficient language and multimodal models, and yet prevailing approaches based on pooling or learned projections remain underperforming.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Every Weight Is a Path of Shared Discrete Decisions</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Ammar Ali, Stamatis Lefkimmiatis</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-26T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31931">Abs</a> · <a href="https://arxiv.org/pdf/2610.31931">PDF</a> · <a href="https://github.com/ammarali32/StateTree-Representation">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">We introduce TWIG (Tree-structured Weights with Inherited Gates), a representation in which every weight of a neural network is the end of a path of small discrete decisions: a sign, a shift by a power of two, a zero gate, an index into a shared table. Weights that belong together share the upper part of their paths, and each decision is inherited by every weight below it, so it is stored once and applied once. This simple change has three consequences. Any trained network can be written as a TWIG, and when the decisions are powers of two its weight layers become circuits made almost entirely of wires and adders, suited to chips whose weights are fixed at fabrication. Pruning, quantization, low-rank factorization, codebooks and weight sharing become edits of one object, so a single optimizer can choose among all of them for a whole network. And choosing the decisions is the ground-state problem of a higher-order Boltzmann machine whose interactions follow the paths of the tree, the problem class that annealers and quantum optimizers are built to solve. Today these questions are handled apart: each compression method brings its own format and solver, a circuit with fixed weights needs a dedicated constant multiplier for every weight, and discrete solvers reach only narrow subproblems such as rounding. Weight formats have long been moving toward shared decisions, through group scales, shared exponents, microexponents and sparse weights; TWIG takes this trend to its end, and every common format is a shallow TWIG at no extra cost. On five weight matrices of a large language model, a flat tree whose signed power-of-two terms are chosen per weight for circuit cost, with no group scales, needs 9--15\% fewer additions than GPTQ at equal layer error at 3- and 4-bit accuracy on typical matrices, and 20--55\% fewer on matrices with strong outliers.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">We introduce TWIG (Tree-structured Weights with Inherited Gates), a representation in which every weight of a neural network is the end of a path of small discrete decisions: a sign, a shift by a power of two, a zero gate, an index into a shared table.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>AgentVQA: A Unified Benchmark for Agentic Visual Understanding</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Advait Gupta, Sachin Konan, Tom Yin, Gabriel Sarch, Zhuang Liu</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: Project page: https://zlab-princeton.github.io/AgentVQA</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31494">Abs</a> · <a href="https://arxiv.org/pdf/2610.31494">PDF</a> · <a href="https://github.com/zlab-princeton/AgentVQA">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://zlab-princeton.github.io/AgentVQA">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Vision-language models (VLMs) can perform a broad range of tasks across diverse settings, yet their performance in agentic contexts remains poorly understood. Although online evaluations in simulators and real-world environments are essential for measuring interactive agent performance, they are costly and challenging to scale. Complementary offline VQA benchmarks can enable faster and more reliable comparisons across agentic domains, yet existing benchmarks remain limited and fragmented. To address this gap, we introduce AgentVQA, an offline benchmark for evaluating VLMs on realistic agentic scenarios across five agent domains: Web Agents, Robotics, Egocentric Videos, Games, and Spatial Planning. We build AgentVQA by manually selecting 1000 challenging, real-world agent examples from 23 source datasets and adapting them for reliable offline evaluation. The resulting benchmark preserves realistic scenarios from interactive environments across diverse domains, and its model rankings track those from corresponding online evaluations. Across the 22 evaluated models, the best achieves only 58.5% accuracy. Our cross-domain analysis shows that errors are driven primarily by failures to ground and maintain accurate representations of the current and evolving visual state, including localizing relevant UI elements, interpreting motion, tracking state changes over time, and inferring 3D spatial relationships, rather than by task misinterpretation or downstream logical reasoning.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Vision-language models (VLMs) can perform a broad range of tasks across diverse settings, yet their performance in agentic contexts remains poorly understood.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Verus-Insight: Towards Explainable Artifact Detection in AI-Generated Videos</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Zhuoran Zhang, Yang Shi, Qixun Wang, Tengfei Liu, Yuqi Tang, Xuanyu Zhu, Yizhuo Jia, Jingyun Hua, Shixuan Liu, Xianghua Ying, Haotian Wang, Yuanxing Zhang, Pengfei Wan, Wenjing Yang</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: 36 pages</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30866">Abs</a> · <a href="https://arxiv.org/pdf/2610.30866">PDF</a> · <a href="https://github.com/zhangzhuoran997997/Verus-Insight">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://verus-team.github.io/Verus-Insight-Preview/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Recent advances in video generation have made synthetic videos increasingly realistic, placing greater demands on reliable AI-generated video detection. Existing artifact-based detectors typically identify generation artifacts as evidence for source prediction, yet they may either fail to recognize subtle artifacts or reach the correct source decision without faithfully identifying the evidence underlying it. In this work, we systematically investigate how to design and train effective artifact detectors and formulate artifact detection as a structured process comprising three complementary capabilities: Inspection Planning, which determines what should be examined; Evidence Verification, which verifies whether the inspected content exhibits genuine generation artifacts; and Evidence Aggregation, which integrates the verified evidence into the final source decision. Building on this formulation, we introduce Verus-Insight, trained with human-anchored full-process supervision and progressive capability training to strengthen both fine-grained artifact detection and video-level detection. We further introduce Verus-Bench, a benchmark with fine-grained human annotations of perceptible artifacts for evaluating artifact detection. Extensive experiments across diverse benchmarks demonstrate that Verus-Insight achieves strong performance in both fine-grained artifact analysis and AI-generated video detection, with substantial gains in recovering human-perceived artifacts. Further analyses reveal that the three capabilities are complementary yet distinct, and that Verus-Insight more reliably converts relevant inspection targets into supported artifact evidence without increasing spurious artifact claims.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Recent advances in video generation have made synthetic videos increasingly realistic, placing greater demands on reliable AI-generated video detection.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>BrickWright: Agentic Creation of Physically Feasible Brick Builds</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Ava Pun, Kevin Dai, Sally Chen, Maxwell Jones, Ruixuan Liu, Kangle Deng, Changliu Liu, Maneesh Agrawala, Deva Ramanan, Jun-Yan Zhu</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31651">Abs</a> · <a href="https://arxiv.org/pdf/2610.31651">PDF</a> · <a href="https://github.com/AvaLovelace1/brickwright">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://avalovelace1.github.io/brickwright/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Frontier coding agents are becoming increasingly adept at 3D modeling. Yet, they still face challenges when building objects meant to be assembled in the physical world, often creating invalid assemblies with floating, colliding, or disconnected parts. We argue that providing agents with tools for assembling builds and verifying their physical feasibility is sufficient for them to produce physically valid assemblies that still adhere to input prompts. Focusing on the domain of LEGO brick builds, we present BrickWright, a framework for generating physically feasible brick builds from text or image prompts using pre-trained agents, where a build is physically feasible if it uses only real parts, has no colliding or floating parts, and forms a connected structure if possible. BrickWright guides agents to create builds by writing code with BrickLayer, a Python toolkit with two main components: an ergonomic brick assembly API that halves inference cost compared to working in raw LDraw, and a validator that provides feedback on physical feasibility. Whereas baseline agents achieve physical validity rates ranging from only 9% (GPT-6 Luna) to 69% (GPT-6 Astra), BrickWright-guided agents achieve 100% validity on a sample of 512 prompts, while improving prompt adherence for lightweight agents and maintaining it for stronger agents. Additionally, they outperform specialized models on the text-to-brick task. Code is available on our project page: https://avalovelace1.github.io/brickwright/</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Frontier coding agents are becoming increasingly adept at 3D modeling.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Different Tasks, Different Timesteps: Temporal Task-Aware Quantization for Diffusion Language Models</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Ofek Avivi, Eliron Rahimi, Avi Mendelson, Chaim Baskin</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: preprint</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31198">Abs</a> · <a href="https://arxiv.org/pdf/2610.31198">PDF</a> · <a href="https://github.com/OfekAvivi/T2Quant">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://t2quant.ofekavivi.com/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Diffusion Language Models (DLMs) introduce unique quantization challenges due to their iterative denoising process. In this work, we reveal that quantization sensitivity is both taskand time-dependent, with different downstream tasks exhibiting distinct precision requirements across denoising steps. We further show that these patterns can be predicted without groundtruth labels or task-specific evaluation metrics. Building on these findings, we introduce T 2Quant, a task and time-aware mixedprecision quantization framework that uses a label-free sensitivity signal to optimally allocate activation precision across denoising steps under a fixed bit-width budget. Extensive experiments across three DLMs and six benchmarks demonstrate that T 2Quant consistently improves the average accuracy of existing quantization methods, achieving gains of up to 6.7 percentage points under the same budget.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Diffusion Language Models (DLMs) introduce unique quantization challenges due to their iterative denoising process.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>RIDAR: Safeguarding Research Integrity in Autonomous Research Agents via Automated Detection and Runtime Intervention</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Jiening Siow, Amy Xin, Junjie Wang, Ziyu Tang, Zijun Yao, Yunjia Qi, Fanjin Zhang, Lei Hou, Jie Tang, Juanzi Li</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31372">Abs</a> · <a href="https://arxiv.org/pdf/2610.31372">PDF</a> · <a href="https://github.com/THU-KEG/RIDAR">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Autonomous research agents are increasingly used to automate large portions of scientific research, yet they are prone to research integrity violations (RIVs): behaviors that compromise the validity, reproducibility, or faithfulness of the research process. We present RIDAR, a framework for automated RIV detection and runtime intervention. First, we introduce RIVT, a comprehensive taxonomy of 14 RIV types spanning the full research lifecycle. Building on RIVT, we present RIDAR-post-hoc, a framework to detect RIVs within agent trajectories. RIDAR-post-hoc achieves 85.2% F1 performance on RIV-Gold, a benchmark for RIV detection with 60 expert-annotated trajectories. Applying RIDAR-post-hoc to RIV-Wild, a dataset of 300 agent trajectories across 50 distinct research tasks, we detect 3,964 RIV instances in 99.7% of trajectories, revealing the prevalence of RIVs in current agents. Finally, we present RIDAR-runtime, a framework for dynamically detecting and correcting RIVs during agent runtime. RIDAR-runtime effectively reduces agent RIVs remaining at task completion by 36.8%. We will release our code and data to facilitate future research.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Autonomous research agents are increasingly used to automate large portions of scientific research, yet they are prone to research integrity violations (RIVs): behaviors that compromise the validity, reproducibility, or faithfulness of the research process.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>FilmFlow: Agentic System for 3D Virtual Film Cinematography</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Yiming Zhang, Jiarui Guo, Haojia Wei, Yifei Liu, Yifan Yang, Hongjie Zhang, Xue Yang, Zhihang Zhong</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30753">Abs</a> · <a href="https://arxiv.org/pdf/2610.30753">PDF</a> · <a href="https://huggingface.co/huggingface">Code1</a> · <a href="https://huggingface.co/docs/hub/spaces">Code2</a> · <a href="https://visionary-laboratory.github.io/Filmflow/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Complex camera motion is central to visual storytelling, yet translating cinematographic intent into controllable, executable camera trajectories remains challenging. We introduce FilmFlow, an agentic framework that converts natural-language instructions or reference videos into explicit camera trajectories for dynamic 3D environments. To generate these trajectories, a Director agent constructs executable camera plans by composing high-level motions from concurrent atomic operations that jointly control translation, rotation, and framing. The Director is supported by three specialized agents: an Interpreter that extracts scene-grounded cinematographic intent, a Scout that selects initial viewpoints, and a Critic that evaluates rendered results and provides visual feedback for iterative plan refinement. We also introduce CinemaBench, comprising 150 Blender scenes from self-created and licensed sources, with five camera instructions per scene for 750 text-directed tasks and 60 reference videos associated with a subset of scenes. CinemaBench supports evaluation of both text-directed camera generation and video reference-directed camera generation. Across a diverse set of evaluated baselines, FilmFlow achieves the strongest benchmark performance and the highest user preference, demonstrating effective spatial reasoning, temporal coordination, and visual composition for executable 3D cinematography.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Complex camera motion is central to visual storytelling, yet translating cinematographic intent into controllable, executable camera trajectories remains challenging.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>SCOPE: Compiling Natural-Language Policies into Neurosymbolic Predicate Programs</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Arnon Mazza, Elad Levi</div>
+<div class="meta-line">First: 2026-10-21T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.31062">Abs</a> · <a href="https://arxiv.org/pdf/2610.31062">PDF</a> · <a href="https://huggingface.co/huggingface">Code1</a> · <a href="https://huggingface.co/docs/hub/spaces">Code2</a> · <a href="https://huggingface.co/datasets/Plurai/SCOPE">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Policy enforcement for LLM agents has shifted from single-turn content moderation to compound, application-specific policies evaluated over multi-turn transcripts and tool-call trajectories. Fine-tuned guardrail models are efficient but degrade on compound policies, and while LLM-as-a-judge approaches achieve higher accuracy, they incur high inference cost and tend to produce unstable predictions. Neurosymbolic methods offer a natural alternative, decomposing the policy into narrow neural decisions composed under explicit logic. However, existing symbolic layers lack the required expressiveness and are optimized against fixed data rather than the policy itself. To address this, we introduce SCOPE, which compiles a policy into an executable program of neural predicates executed by small models, deterministic extractors, and code that composes their outputs. The program is optimized jointly with its training data, using adversarial generation of counterexamples that target where the program deviates from the policy. We evaluate SCOPE on a benchmark of real-world policy tasks against prompt optimization, task decomposition, and workflow generation methods, achieving the highest average accuracy across tasks and models. Programs optimized with the weakest executor transfer to other models without further optimization. This allows them to be deployed in production on inexpensive models, where they reach accuracy comparable to frontier reasoning models. Unlike these monolithic models, SCOPE produces substantially more stable predictions, and each verdict is interpretable through the predicate outputs that produced it. Additionally, we validate the key components of our method through an ablation study. SCOPE thus enables reliable, interpretable, and efficient policy enforcement at production scale.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Policy enforcement for LLM agents has shifted from single-turn content moderation to compound, application-specific policies evaluated over multi-turn transcripts and tool-call trajectories.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>SplatLab: Autonomous Scientific Discovery for 3DGS Research</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Seemandhar Jain, Manmohan Chandraker</div>
+<div class="meta-line">Venue: NeurIPS 2026</div>
+<div class="meta-line">First: 2026-10-20T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: Accepted at NeurIPS 2026. 14 pages, 4 figures. Project page: https://seemandhar.github.io/splatlab</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30468">Abs</a> · <a href="https://arxiv.org/pdf/2610.30468">PDF</a> · <a href="https://github.com/seemandhar/SplatLab">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://seemandharjain.com/splatlab/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Reproducing a published 3DGS paper takes weeks of expert engineering before any extension can be proposed. Prior autonomous-research systems read papers, draft hypotheses, and write code, but are limited by short fixed templates, low executability, and weak traceability, and none has been demonstrated end-to-end in a live computer-vision subfield with intense activity. SplatLab is an autonomous research system for 3D Gaussian Splatting that addresses these limitations. Given a research prompt, a target-paper URL, or no input at all, it reproduces a published baseline, proposes an extension, trains and ablates across Mip-NeRF 360 and LLFF, writes the manuscript, and binds every reported number to a logged training run. Five design choices distinguish it: (i) candidates mutate plugins from a verified-reproduction backbone matched to published baselines; (ii) a cascade-weighted Elo tournament across eight islands scores candidates on measured GPU PSNR with verbal-gradient feedback; (iii) a standing falsifier subtracts Elo on failure, integrating stress-test survival into selection; (iv) every reported number is bound to a logged training run, and the run cannot terminate while any claim is unbacked; (v) a seven-category 3DGS taxonomy wraps EVOLVE-BLOCK markers in domain-aligned scaffolds transferable across 3DGS repositories. On PSNR-targeted runs, SplatLab&#x27;s manuscripts beat their reproduced targets by +0.18 to +3.78 dB, including +3.78 dB on astrophotographic nebula rendering, for which no prior 3DGS method exists. The research cycle compresses from months of graduate-student time to days of mostly autonomous compute. Code, all manuscripts, experiment ledgers, and the cross-run paper store are available on the project page.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Reproducing a published 3DGS paper takes weeks of expert engineering before any extension can be proposed.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>TARSphere: A Robot-Oriented Full-Stack Framework for Long-Horizon Embodied Agents in Evolving Physical and Social Environments</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Yicheng Xu, Zhikai Xu, Ziyuan Chen, Yuhang Dong, Tao Zhang, Zhucun Xue, Yong Liu, Jiangning Zhang</div>
+<div class="meta-line">First: 2026-10-20T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: 13 pages, 8 figures, 7 tables. Project page: https://xuyicheng-zju.github.io/TARSphere/ Code: https://github.com/xuyicheng-zju/TARSphere</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30043">Abs</a> · <a href="https://arxiv.org/pdf/2610.30043">PDF</a> · <a href="https://github.com/xuyicheng-zju/TARSphere">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://xuyicheng-zju.github.io/TARSphere/">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Robots must act under physical and social constraints while adapting to changes in their environment and human needs. Existing embodied-agent systems often focus on specified goals or abstract execution into symbolic actions, limiting evaluation in an evolving world. We introduce TARSphere, a robot-oriented full-stack framework for physically and socially grounded long-horizon embodied agents. TARSphere-Infra runs robot policies in a physics simulator with embodied NPCs and constrained dialogue. An event-driven finite-state machine (FSM) uses completed actions and delivered information to update task states and evaluate outcomes. TARSphere-Harness, its embodied brain harness, lets a frozen multimodal large language model (MLLM) act through multi-level executable skills, using observations, hierarchical memory, and execution feedback to revise its decisions. On this foundation, agent-in-the-loop curation aligns task semantics, causal dependencies, and scene geometry to construct TARSphere-Bench: 360 episodes across 30 indoor scenes. Five paired conditions assess perceptual robustness, disruption adaptation, task update, human coordination, and intent understanding for navigate-and-report and fetch-and-deliver tasks. Our evaluation of 8 MLLMs shows that general-purpose models can outperform embodied models, while task updates and human interaction remain difficult. Frequent collisions and falls further motivate evaluating execution safety alongside task success, even with a shared action interface and decision budget.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Robots must act under physical and social constraints while adapting to changes in their environment and human needs.</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>FrontierCS 2: A Benchmark for Computer Science R&amp;D</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Qiuyang Mang, Wenhao Chai, Runyuan He, Dongruixuan Li, Zihan Zheng, Yujun He, Xuanyi Zhou, Hao Wang, Siddhant Ray, Bo Peng, Ruyi Ji, Shuo Yang, Haocheng Xi, Boru Chen, Xinyang David Han, Melissa Pan, Mayank Mishra, Boxi Yu, Sijia Liu, Kerem Akillioglu, Yi Pan, Zirui Wang, Mert Cemri, Diogo Antunes, Yichuan Wang, Aiwei Ivy Zhang, Zhenyang Chen, Qizheng Zhang, Kaiyuan Liu, Wenyuan Huang, Sherry Ruan, Shu Liu, Dacheng Li, Zerui Cheng, Zeyu Shen, Shang Zhou, Hanfei Chen, Yuzhong Zhang, Bohan Lyu, Qu Ao, Han Zheng, Chonghe Jiang, Jingzhuo Hu, Xiaokun Chen, Kunjun Li, Zhiqing Zhong, Haoye Tian, Tong Zhao, Yunzhong He, Hanchen Li, Ofir Press, Jiantao Jiao, Kunle Olukotun, Karthik R. Narasimhan, Jingbo Shang, Koushik Sen, Matei Zaharia, Alex Dimakis, Ion Stoica, Joseph E. Gonzalez, Alvin Cheung</div>
+<div class="meta-line">First: 2026-10-20T20:00:00.000Z · Latest: 2026-10-22T00:00:00.000Z</div>
+<div class="meta-line">Comments: Website: https://frontier-cs.org ; Code: https://github.com/FrontierCS/FrontierCS-2</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.29932">Abs</a> · <a href="https://arxiv.org/pdf/2610.29932">PDF</a> · <a href="https://github.com/FrontierCS/FrontierCS-2">Code1</a> · <a href="https://huggingface.co/huggingface">Code2</a> · <a href="https://huggingface.co/docs/hub/spaces">Code3</a> · <a href="https://frontier-cs.org">Project1</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Can LLM agents make contributions to frontier computer science R&amp;D? We introduce FrontierCS 2, a benchmark of 48 open-ended tasks. We take a paper and the code its authors released and delete the paper&#x27;s contribution. The deleted code becomes the human reference that sets the bar. Earlier open-ended benchmarks give each agent a problem statement and grade one program after the run. FrontierCS 2 places the agent inside a research environment. The agent inherits a working repository and may submit a patch at any point. For each patch, a judge returns a development-suite score but keeps the evaluator, the held-out final suite and the reference private, and grades the final submission on that suite against the reference. The tasks span 13 domains, from machine-learning systems and high-performance computing to databases, security and robotics. Beyond these 48 tasks, FrontierCS 2 keeps a private set of more than 100 tasks, to be announced in the future. We evaluate 12 agents. The best one is Claude Opus 5.5, passing 58% of its runs. No run passes on 16 tasks. A higher score is not the same as a pass: most runs that beat the reference on the combined final score still fall short on some metric or workload. On a shared capability scale for agents and tasks, the median task is roughly as difficult as what the strongest agent can handle.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Can LLM agents make contributions to frontier computer science R&amp;D?</div>
+</details>
+</div>
+<div class="card">
+<div class="title"><span style="display:inline-block;background:#ca8a04;color:#fff;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-right:8px">★ 5/10</span>Agent Mosaic: Recognizing Confidentiality Leaks in Agentic LLM Systems</div>
+<div class="meta-line" style="color:#ca8a04;font-style:italic">(scoring failed for this batch)</div>
+<div class="meta-line">Authors: Daniel Ruiz, Luca Luceri, Emilio Ferrara</div>
+<div class="meta-line">Venue: ACL</div>
+<div class="meta-line">First: 2026-10-20T20:00:00.000Z · Latest: 2026-10-23T00:00:00.000Z</div>
+<div class="meta-line">Comments: 16 pages, 9 figures, submitted to ACL Rolling Review, October 2026 cycle</div>
+<div class="links" style="margin-top:8px"><a href="https://arxiv.org/abs/2610.30418">Abs</a> · <a href="https://arxiv.org/pdf/2610.30418">PDF</a> · <a href="https://huggingface.co/huggingface">Code1</a> · <a href="https://huggingface.co/docs/hub/spaces">Code2</a></div>
+<details class="detail"><summary>Abstract</summary>
+<div class="mono">Modern LLM agents can retrieve information from accessible documents, and then disclose a sensitive conclusion assembled from them. This mosaic effect creates a critical risk for agents operating over confidential data. We quantify its realization with 30 synthetic cybersecurity, medical, and military examples, yielding 10,800 final answers from three LLM agents in controlled simulation and 1,440 answers from live agents in two open-source harnesses. Even under benign queries designed to be answerable from one document, GPT-5.6-Sol, the best performing model tested, discloses forbidden composites in 7.08% of answers (95% CI: 3.75-10.67%) in simulation, with worse disclosure rates in live harnesses. Adding visible classification headers and explicit aggregation rules reduces pooled disclosure rates substantially, yet unsafe disclosures persist in 32.37% of simulated answers (95% CI: 28.33-36.19%) across all intents despite these safeguards. Furthermore, increased refusals do not guarantee confidentiality, since significant refusals reveal the prohibited conclusion regardless. These results point to a troubling conclusion: sensitive data leaks via mosaic-style events are an observed confidentiality failure mode in the evaluated settings at non-negligible rates. They motivate stronger controls on what agents may infer and disclose in sensitive data environments with mixed-clearance users.</div></details>
+<details class="detail" open><summary>结构化分析</summary>
+<div style="margin-top:10px"><b>研究动机</b></div>
+<div class="mono" style="margin-left:12px">Modern LLM agents can retrieve information from accessible documents, and then disclose a sensitive conclusion assembled from them.</div>
+</details>
+</div></div>
+    <details style="margin-top:16px" class="detail"><summary>History</summary>
+      <div class="history-list"><a href="./20261027_0705.html">20261027_0705</a>
+<a href="./20261020_0651.html">20261020_0651</a>
+<a href="./20261013_0911.html">20261013_0911</a>
+<a href="./20261006_0842.html">20261006_0842</a>
+<a href="./20260929_0747.html">20260929_0747</a>
+<a href="./20260922_0632.html">20260922_0632</a>
+<a href="./20260915_0623.html">20260915_0623</a>
+<a href="./20260908_0606.html">20260908_0606</a>
+<a href="./20260901_0718.html">20260901_0718</a>
+<a href="./20260825_0341.html">20260825_0341</a>
+<a href="./20260818_0340.html">20260818_0340</a>
+<a href="./20260811_0405.html">20260811_0405</a>
+<a href="./20260804_0437.html">20260804_0437</a>
+<a href="./20260728_0434.html">20260728_0434</a>
+<a href="./20260721_0433.html">20260721_0433</a>
+<a href="./20260714_0427.html">20260714_0427</a>
+<a href="./20260707_0503.html">20260707_0503</a>
+<a href="./20260630_0458.html">20260630_0458</a>
+<a href="./20260623_0541.html">20260623_0541</a>
+<a href="./20260616_0554.html">20260616_0554</a></div>
+    </details>
+    <div class="footer">Generated by arxiv-tracker</div>
+  </div>
+</body></html>
